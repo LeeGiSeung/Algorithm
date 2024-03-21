@@ -1,56 +1,61 @@
 #include <iostream>
+#include <deque>
+#include <string>
+#include <sstream>
+#include <vector>
+#include <string>
+#include <queue>
+#include <algorithm>
+#include <cmath>
+#include <cstdlib>
+#include <map>
+#include <cstring>
 
 using namespace std;
+int n, result = 0;
+int house[18][18];
 
-int n, arr[17][17], xmove[3] = { 0, 1, 1 }, ymove[3] = { 1, 0, 1 };
-int record[17][17], answer;
+int turn = 0;
 
-void DFS(int x, int y, int direction) {
+void pi(int x, int y, int turn, int l) {
 	if (x == n - 1 && y == n - 1) {
-		answer++;
+		result++;
 		return;
 	}
-
-	for (int i = 0; i < 3; i++) {
-		if (direction == 0 && i == 1)
-			continue;
-		else if (direction == 1 && i == 0)
-			continue;
-		else {
-			int nx = x + xmove[i];
-			int ny = y + ymove[i];
-
-			if (nx >= 0 && nx < n && ny >= 0 && ny < n) {
-				if (i == 0 || i == 1) {
-					if (arr[nx][ny] == 0 && !record[nx][ny]) {
-						record[nx][ny] = true;
-						DFS(nx, ny, i);
-						record[nx][ny] = false;
-					}
-				}
-				else {
-					if (arr[nx][ny] == 0 && arr[nx-1][ny] == 0 && arr[nx][ny-1] == 0 && !record[nx][ny]) {
-						record[nx][ny] = true;
-						DFS(nx, ny, i);
-						record[nx][ny] = false;
-					}
-				}
-			}
-		}
+	//가로
+	if (house[x][y + 1] == 0 && x < n && y < n && l == 0) {
+		pi(x, y + 1, 0, 0);
 	}
+	//세로 -> 세로
+	if (house[x + 1][y] == 0 && x + 1 < n && y < n && l == 1) {
+		pi(x + 1, y, 0, 1);
+	}
+	//대각선 -> 세로
+	if (house[x + 1][y] == 0 && x + 1 < n && y < n && turn == 1) {
+		pi(x + 1, y, 0, 1);
+	}
+	//대각선
+	if (house[x + 1][y + 1] == 0 && house[x][y + 1] == 0 && house[x + 1][y] == 0 && x + 1 < n && y + 1 < n) {
+		pi(x + 1, y + 1, 1, 0);
+	}
+
 }
 
-int main() {
+int main(void) {
 	ios::sync_with_stdio(false);
-	cin.tie(0);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
 	cin >> n;
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
-			cin >> arr[i][j];
+			cin >> house[i][j];
 		}
 	}
+	pi(0, 1, 0, 0);
 
-	DFS(0, 1, 0);
+	cout << result;
 
-	cout << answer;
+	return 0;
+
 }
