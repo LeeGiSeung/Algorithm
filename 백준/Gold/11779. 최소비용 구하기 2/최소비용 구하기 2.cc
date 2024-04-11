@@ -1,70 +1,82 @@
 #include <iostream>
-#include <queue>
+#include <deque>
 #include <vector>
-#include <stack>
-
-#define INF 987654321
+#include <utility>
+#include <limits>
 
 using namespace std;
 
-typedef long long ll;
-typedef pair<int, int> pii;
-int N, M, from, to, weight, start, target;
-vector<pii> v[1001];
-priority_queue<pii, vector<pii>, greater<pii>> pq;
-int dist[1001], route[1001] ;
-stack<int> st;
+vector<pair<int, int>> city[1001];
+int route[1001];
+int value[1001];
+int n, m, x, y;
+int result = numeric_limits<int>::max();
+int result_ct;
 
-int dijkstra(int startX, int target) {
-	dist[startX] = 0;
-	pq.push(make_pair(dist[startX], startX));
+void input() {
+    cin >> n >> m;
+    for (int i = 0; i < m; i++) {
+        int a, b, c;
+        cin >> a >> b >> c;
+        city[a].emplace_back(b, c);
+    }
+    cin >> x >> y;
+}
 
-	while (!pq.empty()) {
-		int dis = pq.top().first;
-		int x = pq.top().second;
-		pq.pop();
+void solve() {
+    deque<pair<int, pair<int, int>>> q;
+    q.push_back({ 1, {x, 0} });
+    fill(value, value + n + 1, numeric_limits<int>::max());
+    value[x] = 0;
 
-		if (x == target)
-			return dist[target];
+    while (!q.empty()) {
+        int ct = q.front().first;
+        int start = q.front().second.first;
+        int distance = q.front().second.second;
+        q.pop_front();
 
+        if (distance > result || value[start] < distance)
+            continue;
 
-		for (int i = 0; i < v[x].size(); i++) {
-			int nx = v[x][i].first;
-			int weight = v[x][i].second;
+        if (start == y) {
+            result = distance;
+            result_ct = ct;
+        }
 
-			if (dist[nx] > dis + weight) {
-				dist[nx] = dis + weight;
-				pq.push(make_pair(dist[nx], nx));
-				route[nx] = x; // 경로를 저장해준다.
-			}
-		}
-	}
+        for (const auto& p : city[start]) {
+            int next_point = p.first;
+            int next_distance = p.second;
+            if (value[next_point] > distance + next_distance) {
+                route[next_point] = start;
+                value[next_point] = next_distance + distance;
+                q.push_back({ ct + 1, {next_point, next_distance + distance} });
+            }
+        }
+    }
+    cout << result << "\n";
+    cout << result_ct << "\n";
 }
 
 int main() {
-	ios::sync_with_stdio(false);
-	cin.tie(0);
-	cin >> N >> M;
-	for (int i = 0; i < M; i++) {
-		cin >> from >> to >> weight;
-		v[from].push_back(make_pair(to, weight));
-	}
-	cin >> start >> target;
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    cout.tie(nullptr);
 
-	for (int i = 1; i <= N; i++) {
-		dist[i] = INF;
-	}
+    input();
+    solve();
 
-	cout<<dijkstra(start, target)<<"\n";
-	
-	for (int i = target; i != start; i = route[i]) // 경로 역추적 5 4 1 순서
-		st.push(i);
-	st.push(start);
+    deque<int> routev;
+    int temp = y;
+    routev.push_back(y);
 
-	cout << st.size() << "\n";
-	while (!st.empty()) {
-		cout << st.top() << " "; // 다시 역순 출력
-		st.pop();
-	}
+    while (temp != x) {
+        routev.push_back(route[temp]);
+        temp = route[temp];
+    }
 
+    for (int i = routev.size() - 1; i >= 0; i--) {
+        cout << routev[i] << " ";
+    }
+
+    return 0;
 }
