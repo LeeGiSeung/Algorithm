@@ -11,52 +11,45 @@ int main()
     cout.tie(NULL);
 
     string s;
-    stack<char> op;
+    stack<char> sc;
     cin >> s;
 
-    for (int i = 0; i < s.length(); i++)
-    {
-        if (s[i] >= 'A' && s[i] <= 'Z')
-        {
+    for (int i = 0; i < s.length(); i++) {
+        if (s[i] >= 'A' && s[i] <= 'Z') {
             cout << s[i];
         }
-        else
-        {
-            if (s[i] == '(')
-                op.push(s[i]);
-            else if (s[i] == '*' || s[i] == '/')
-            {
-                while (!op.empty() && (op.top() == '*' || op.top() == '/'))
-                {
-                    cout << op.top();
-                    op.pop();
-                }
-                op.push(s[i]);
+        else {
+            if (s[i] == '(') {
+                sc.push(s[i]);
             }
-            else if (s[i] == '+' || s[i] == '-')
-            {
-                while (!op.empty() && op.top() != '(')
-                {
-                    cout << op.top();
-                    op.pop();
+
+            else if (s[i] == '+' || s[i] == '-') {
+                while (!sc.empty() && sc.top() != '(') {
+                    cout << sc.top();
+                    sc.pop();
                 }
-                op.push(s[i]);
+                sc.push(s[i]);
             }
-            else if (s[i] == ')')
-            {
-                while (!op.empty() && op.top() != '(')
-                {
-                    cout << op.top();
-                    op.pop();
+            else if (s[i] == '*' || s[i] == '/') {
+                while (!sc.empty() && (sc.top() == '*' || sc.top() == '/')) {
+                    cout << sc.top();
+                    sc.pop();
                 }
-                op.pop();
+                sc.push(s[i]);
+            }
+            else if (s[i] == ')') {
+                while (!sc.empty() && sc.top() != '(') {
+                    cout << sc.top();
+                    sc.pop();
+                }
+                sc.pop();
             }
         }
     }
-    while (!op.empty())
-    {
-        cout << op.top();
-        op.pop();
+
+    while (!sc.empty()) {
+        cout << sc.top();
+        sc.pop();
     }
 
     return 0;
