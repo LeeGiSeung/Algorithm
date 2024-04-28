@@ -1,84 +1,65 @@
-#include<iostream>
-#include<vector>
-#include<algorithm>
- 
-#define endl "\n"
-#define MAX 10000 + 1
+#include <iostream>
+#include <algorithm>
+#include <queue>
+#include <vector>
+
 using namespace std;
- 
-int Vertex, E, Answer;
-int Parent[MAX];
-vector<pair<int, pair<int, int>>> V;
- 
-void Input()
-{
-    cin >> Vertex >> E;
-    for(int i = 0; i < E; i++)
-    {
-        int From, To, Cost;
-        cin >> From >> To >> Cost;
- 
-        V.push_back(make_pair(Cost, make_pair(From, To)));
-    }
- 
-    sort(V.begin(), V.end());
+int v, e;
+vector<pair<int, pair<int, int>>> g;
+int parent[10001];
+
+int find(int x) {
+    if (parent[x] == x) return x;
+    else return parent[x] = find(parent[x]);
 }
- 
-int Find(int x)
-{
-    if (Parent[x] == x) return x;
-    else return Parent[x] = Find(Parent[x]);
-}
- 
-void Union(int x, int y)
-{
-    x = Find(x);
-    y = Find(y);
- 
-    if (x != y) Parent[y] = x;
-}
- 
-bool SameParent(int x, int y)
-{
-    x = Find(x);
-    y = Find(y);
- 
-    if (x == y) return true;
+
+bool same_parent(int s, int e) {
+    s = find(s);
+    e = find(e);
+    if (s == e)return true;
     else return false;
 }
- 
-void Solution()
-{
-    for (int i = 1; i <= Vertex; i++)
-    {
-        Parent[i] = i;
+
+void uni(int x, int y) {
+    x = find(x);
+    y = find(y);
+    parent[y] = x;
+}
+
+void input() {
+    cin >> v >> e;
+    for (int i = 0; i < e; i++) {
+        int a, b, c;
+        cin >> a >> b >> c;
+        g.push_back({ c,{a,b} });
     }
- 
-    for (int i = 0; i < E; i++)
-    {
-        if (SameParent(V[i].second.first, V[i].second.second) == false)
-        {
-            Union(V[i].second.first, V[i].second.second);
-            Answer = Answer + V[i].first;
+    sort(g.begin(), g.end());
+    for (int i = 1; i <= v; i++) {
+        parent[i] = i;
+    }
+}
+
+void solve() {
+    int cnt = 0;
+    for (int i = 0; i < g.size(); i++) {
+        int cost = g[i].first;
+        int start = g[i].second.first;
+        int end = g[i].second.second;
+        if (!same_parent(start, end)) {
+            uni(start, end);
+            cnt += cost;
         }
     }
+    cout << cnt;
 }
- 
-void Solve()
-{
-    Input();
-    Solution();
- 
-    cout << Answer << endl;
-}
- 
-int main(void)
-{
-    ios::sync_with_stdio(false);
-    cin.tie(NULL);
-    cout.tie(NULL);
- 
-    Solve();
- 
+
+int main() {
+    cin.tie(0); cout.tie(0); ios::sync_with_stdio(false);
+
+    input();
+    solve();
+
     return 0;
+
+
 }
