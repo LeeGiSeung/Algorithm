@@ -3,19 +3,17 @@
 #include <queue>
 
 using namespace std;
-int result = 1;
-int n;
-
 int ti[16];
 int pi[16];
 int res[16] = { 0 };
+int n;
+int k = 0;
 
 void bfs() {
-    int k = 0;
     for (int i = 0; i <= n; i++) {
-        res[i] = max(k, res[i]);
+        res[i] = max(res[i], k);
         if (i + ti[i] <= n) {
-            res[ti[i] + i] = max(res[ti[i] + i], res[i] + pi[i]);
+            res[i + ti[i]] = max(res[i + ti[i]], res[i] + pi[i]);
         }
         k = max(k, res[i]);
     }
@@ -28,13 +26,11 @@ int main() {
     cin >> n;
 
     for (int i = 0; i < n; i++) {
-        int a, b;
-        cin >> a >> b;
-        ti[i] = a;
-        pi[i] = b;
+        cin >> ti[i] >> pi[i];
     }
 
     bfs();
+   
 
     return 0;
 
