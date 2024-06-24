@@ -1,53 +1,62 @@
-#include <cstdio>
-#include <vector>
-#include <cmath>
-using namespace std;
+#include <iostream>
+#include <algorithm>
+#include <queue>
 
-bool team[20] = {};
-int score[20][20] = {};
-int N, mymin = 99999999;
-void teamset(int idx, int cnt)
+using namespace std;
+int n;
+int soccer [22][22];
+deque<int> start;
+deque<int> link;
+int start_result = 0, link_result = 0, result = 100000000;
+bool visit[25];
+
+void DFS(int x, int pos) // x는 카운트 수, pos는 다음 값
 {
-    vector<int> start; // 스타트 팀원의 인덱스값
-    vector<int> link; // 링크팀 팀원의 인덱스값
-    int start_score = 0;
-    int link_score = 0;
-    if(cnt == (N/2))
-    {
-        for(int i = 0; i < N; i++)
-        {
-            if(team[i] == true) // 선택된 사람들은 start팀에
-                start.push_back(i);
-            else // 그 외의 사람들은 link팀으로
-                link.push_back(i);
-        }
-        for(int i = 0; i < (N/2); i++)
-            for(int j = 0; j < (N/2); j++)
-            {
-                start_score += score[start[i]][start[j]];
-                link_score += score[link[i]][link[j]];
-            } // 각 팀의 능력치의 합 계산
-        if(abs(start_score - link_score) < mymin)
-            mymin = abs(start_score - link_score);
-        return;
-    }
-    for(int i = idx; i < N; i++)
-    {
-        if(team[i])
-            continue;
-        else
-        {
-            team[i] = true;
-            teamset(i,cnt+1);
-            team[i] = false;
-        }
-    }
+	if (x == n / 2) // 카운트수가 정원의 1/2이 됐을 때 능력치합 계산
+	{
+		int start, link;
+		start = 0;
+		link = 0;
+
+		for (int i = 1; i <= n; i++)
+		{
+			for (int j = 1; j <= n; j++)
+			{
+				if (visit[i] == true && visit[j] == true) start += soccer[i][j];
+				if (visit[i] == false && visit[j] == false) link += soccer[i][j];
+			}
+		}
+
+		int temp = abs(start - link);
+		if (result > temp) result = temp;
+
+		return;
+	}
+
+	for (int i = pos; i < n; i++)
+	{
+		visit[i] = true;
+		DFS(x + 1, i + 1);
+		visit[i] = false;
+	}
+
 }
+
+
 int main() {
-    scanf("%d",&N);
-    for(int i = 0; i < N; i++)
-        for(int j = 0; j < N; j++)
-            scanf("%d",&score[i][j]);
-    teamset(0,0);
-    printf("%d",mymin);
+    cin.tie(0); cout.tie(0); ios::sync_with_stdio(false);
+
+    cin >> n;
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) {
+			cin >> soccer[i][j];
+        }
+    }
+
+	DFS(0, 1);
+
+    cout << result << "\n";
+
+    return 0;
+
 }
