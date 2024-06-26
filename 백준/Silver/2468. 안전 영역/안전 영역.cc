@@ -1,91 +1,83 @@
 #include <iostream>
-#include <vector>
 #include <algorithm>
-#include <fstream>
-#include <math.h>
-#include <string>
-#include <string.h>
 #include <queue>
+#include <cstring> // memset을 사용하기 위한 헤더 추가
+
 using namespace std;
-#define endl "\n"
-
-#define MAX 100+1
 int n;
-int board[MAX][MAX];
-bool visited[MAX][MAX];
+int place[100][100];
+int max_rain = 0;
+int max_place = 0;
+bool safe_zone[100][100];
+bool visit[100][100];
+int count_safe = 0;
 
-int dy[] = { 0,1,0,-1 };
-int dx[] = { 1,0,-1,0 };
-int ans;
+int dx[4] = { -1, 1, 0, 0 };
+int dy[4] = { 0, 0, -1, 1 };
 
-void reset() {
-	for (int i = 0; i <= n; i++)
-	{
-		for (int j = 0; j <= n; j++)
-		{
-			visited[i][j] = false;
-		}
-	}
+void find_safe() {
+    count_safe = 0;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (safe_zone[i][j] == true && visit[i][j] == false) {
+                deque<pair<int, int>> q;
+                q.push_back(make_pair(i, j));
+                visit[i][j] = true;
+
+                while (!q.empty()) {
+                    int kx = q.front().first;
+                    int ky = q.front().second;
+                    q.pop_front();
+
+                    for (int k = 0; k < 4; k++) {
+                        int nx = kx + dx[k];
+                        int ny = ky + dy[k];
+                        if (nx >= 0 && nx < n && ny >= 0 && ny < n && safe_zone[nx][ny] == true && visit[nx][ny] == false) {
+                            q.push_back(make_pair(nx, ny));
+                            visit[nx][ny] = true;
+                        }
+                    }
+                }
+                count_safe++;
+            }
+        }
+    }
+    if (max_place < count_safe) max_place = count_safe;
 }
 
+void dfs() {
+    for (int i = 0; i <= max_rain; i++) {
+        memset(safe_zone, false, sizeof(safe_zone));
+        memset(visit, false, sizeof(visit));
 
-void dfs(int y, int x, int rain) {
-	visited[y][x] = true;
-	for (int i = 0; i < 4; i++)
-	{
-		int nx = x + dx[i];
-		int ny = y + dy[i];
-
-		if (nx<1 || nx > n || ny < 1 || ny > n)
-		{
-			continue;
-		}
-
-		if (!visited[ny][nx] && board[ny][nx] > rain)
-		{
-			dfs(ny, nx, rain);
-		}
-	}
-
+        for (int x = 0; x < n; x++) {
+            for (int y = 0; y < n; y++) {
+                if (place[x][y] > i) {
+                    safe_zone[x][y] = true;
+                }
+            }
+        }
+        find_safe();
+    }
 }
 
-int main()
-{
-	ios_base::sync_with_stdio(false);
-	cin.tie(NULL); cout.tie(NULL);
-	//ifstream cin; cin.open("input.txt");
+int main() {
+    cin.tie(0); cout.tie(0); ios::sync_with_stdio(false);
 
-	cin >> n;
-	
-	for (int i = 1; i <= n; i++)
-	{
-		for (int j = 1; j <= n; j++)
-		{
-			cin >> board[i][j];
-		}
-	}
+    cin >> n;
 
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            int a;
+            cin >> a;
+            place[i][j] = a;
+            if (a > max_rain) max_rain = a;
+        }
+    }
 
-	for (int k = 0; k <= 100; k++)
-	{
-		int cnt = 0;
-		reset();
-		for (int i = 1; i <= n; i++)
-		{
-			for (int j = 1; j <= n; j++)
-			{
-				if (board[i][j] > k && !visited[i][j])
-				{
-					cnt++;
-					dfs(i, j, k);
-				}
-			}
-		}
-		if (cnt > ans)
-		{
-			ans = cnt;
-		}
-	}
+    dfs();
 
-	cout << ans;
+    cout << max_place << "\n";
+
+    return 0;
 }
