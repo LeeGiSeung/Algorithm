@@ -1,48 +1,64 @@
 #include <iostream>
+#include <algorithm>
 #include <queue>
+#include <cstring>
+
+#define endl "\n"
 
 using namespace std;
-#define MAX 1000001
 
-int F, S, G, U, D;
+int f, s, g, u, d;
+bool visit[1000001] = { false };
+int result = -1; // 초기값을 -1로 설정하여 도달하지 못했을 때를 구분
+
 int dx[2];
-int visit[MAX]={0,};
-bool flag=true;
 
 void bfs() {
-    queue<int> q;
-    q.push(S);
-    visit[S]=1;
+    deque<pair<int, int>> q;
+    q.push_back({ s, 0 });
+    visit[s] = true; // 시작층을 방문했다고 표시
 
-    while(!q.empty()) {
-        S = q.front();
-        q.pop();
+    while (!q.empty()) {
+        int floor = q.front().first;
+        int count = q.front().second;
+        q.pop_front();
 
-        for(int i=0;i<2;i++) {
-            int nx = S + dx[i];
-            
-            if(nx>0 && nx<=F) {
-                if(visit[nx]==0) {
-                    visit[nx]=visit[S]+1;
-                    q.push(nx);
-                }
-            }
-            if(S==G) {
-                flag=false;
-                break;
+        if (floor == g) {
+            result = count;
+            return;
+        }
+
+        for (int i = 0; i < 2; i++) {
+            int nfloor = floor + dx[i];
+            if (nfloor >= 1 && nfloor <= f && !visit[nfloor]) {
+                visit[nfloor] = true;
+                q.push_back(make_pair(nfloor, count + 1));
             }
         }
     }
 }
 
 int main() {
-    cin >> F >> S >> G >> U >> D;
+    cin.tie(0); cout.tie(0); ios::sync_with_stdio(false);
 
-    dx[0]=U;
-    dx[1]=-D;
-    
+    cin >> f >> s >> g >> u >> d;
+
+    // 시작층과 목표층이 같은 경우
+    if (s == g) {
+        cout << 0 << endl;
+        return 0;
+    }
+
+    dx[0] = u;
+    dx[1] = -d;
+
     bfs();
 
-    if(flag) cout << "use the stairs";
-    else cout << visit[G]-1;
+    if (result == -1) {
+        cout << "use the stairs" << endl;
+    } else {
+        cout << result << endl;
+    }
+
+    return 0;
 }
