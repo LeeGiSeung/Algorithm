@@ -1,107 +1,132 @@
-#include <iostream>
-#include <vector>
-#include <string.h>
+#include<iostream>
+#include<vector>
+#include<queue>
+#include<stdio.h>
+#include<algorithm>
+
+#define endl "\n"
+
 using namespace std;
+int n, m;
+int ice[300][300] = { 0 };
+int copy_ice[300][300];
+int visit[300][300] = { false };
+int year = 0;
+bool check = false;
 
-int N, M;
-int Map[400][400];
-bool visited[400][400];
-int mnum = 0;
+int dx[4] = { -1,1,0,0 };
+int dy[4] = { 0,0,-1,1 };
 
-vector <pair<int, int>> v;
+void bfs(int x, int y) {
 
-int dx[] = { -1,1,0,0 };
-int dy[] = { 0,0,-1,1 };
-
-void melting() {
-	int x, y, nx, ny;
-	int tmp[400][400];
-
-	for (int i = 0; i < v.size(); i++) {
-		x = v[i].first;
-		y = v[i].second;
-		if (Map[x][y] == 0) continue;
-
-		int cnt = 0;
-		for (int j = 0; j < 4; j++) {
-			nx = x + dx[j];
-			ny = y + dy[j];
-			if (nx < 0 || nx >= N || ny < 0 || ny >= M) continue;
-			if (Map[nx][ny] == 0)cnt++;
-		}
-
-		if (Map[x][y] - cnt <= 0) {
-			mnum--;
-			tmp[x][y] = 0;
-		}
-		else tmp[x][y] = Map[x][y] - cnt;
-	}
-
-	for (int i = 0; i < v.size(); i++) {
-		if (Map[v[i].first][v[i].second] == 0) continue;
-		Map[v[i].first][v[i].second] = tmp[v[i].first][v[i].second];
-	}
-}
-
-void dfs(int x, int y) {
-	visited[x][y] = true;
-
-	int nx, ny;
-	for (int i = 0; i < 4; i++) {
-		nx = x + dx[i];
-		ny = y + dy[i];
-		if (nx < 0 || nx >= N || ny < 0 || ny >= M || visited[nx][ny]) continue;
-		if (Map[nx][ny] > 0) {
-			dfs(nx,ny); 
-            // 모든 길을 확인해야 하므로 방문->false 해줄 필요 없다.
-		}
-	}
-}
-
-bool chuck() {
-	int cnt = 0;
-	for (int i = 0; i < N; i++) {
-		for (int j = 0; j < M; j++) {
-			if (!visited[i][j] && Map[i][j] > 0) {
-				dfs(i, j);
-				cnt++;
+	queue<pair<int, int>> q;
+	q.push({ x,y });
+	visit[x][y] = true;
+	while (!q.empty()) {
+		x = q.front().first;
+		y = q.front().second;
+		q.pop();
+		for (int i = 0; i < 4; i++) {
+			int nx = x + dx[i];
+			int ny = y + dy[i];
+			if (copy_ice[nx][ny] != 0) {
+				if (nx >= 0 && nx < n && ny >= 0 && ny < m && visit[nx][ny] == false) {
+					visit[nx][ny] = true;
+					q.push({ nx,ny });
+				}
 			}
 		}
 	}
-	if (cnt >= 2) return true;
-	else return false;
 }
 
-void Solve() {
-	int year = 0;
-	while (1) {
-		year++;
-		melting();
-		if (mnum == 0) {
-			cout << 0 << endl;
-			return;
+void copy_ice_fun(int x[300][300], int y[300][300]) {
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			x[i][j] = y[i][j];
 		}
-		memset(visited, false, sizeof(visited));//visited 초기화
-		if (chuck()) {
-			cout << year << endl;
-			return;
+	}
+}
+
+void ice_check() {
+	check = false;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+
+			if (ice[i][j] != 0){
+				//cout << i << " " << j << "는 0이 아닙니다." << endl;
+				for (int k = 0; k < 4; k++) {
+					int nx = i + dx[k];
+					int ny = j + dy[k];
+					if (ice[nx][ny] == 0 && nx >= 0 && nx < n && ny >= 0 && ny < m) {
+						//cout << i << " " << j << "에서 " <<nx<<" "<<ny<<"의 좌표값이 0이여서 -1을 합니다."<< endl;
+						if (copy_ice[i][j] - 1 >= 0) {
+							copy_ice[i][j] -= 1;
+						}
+					}
+				}
+
+			}
+		}
+	}
+}
+
+int main()
+{
+	cin >> n >> m;
+
+
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			int a;
+			cin >> a;
+			ice[i][j] = a;
+			if (a == 0) {
+				check = true;
+			}
 		}
 	}
 
-}
+	if (check == false) {
+		cout << 0 << endl;
+		return 0;
+	}
 
-int main() {
-	cin >> N >> M;
-	for (int i = 0; i < N; i++)
-		for (int j = 0; j < M; j++) {
-			cin >> Map[i][j];
-			if (Map[i][j] != 0) {
-				v.push_back({ i,j });
-				mnum++;
+	else {
+		while (true) {
+			int island = 0;
+			year++;
+			copy_ice_fun(copy_ice,ice);
+			ice_check();
+
+			
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < m; j++) {
+					if (copy_ice[i][j] != 0 && visit[i][j] == false) {
+						bfs(i, j);
+						island++;
+					}
+				}
 			}
-		}
+			if (island >= 2) {
+				cout << year;
+				break;
+			}
 
-	Solve();
+			if (island == 0) {
+				cout << 0 << endl;
+				break;
+			}
+
+			copy_ice_fun(ice, copy_ice);
+
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < m; j++) {
+					visit[i][j] = false;
+				}
+			}
+
+		}
+	}
 
 	return 0;
 }
