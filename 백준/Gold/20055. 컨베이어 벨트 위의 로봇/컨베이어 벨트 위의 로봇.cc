@@ -1,92 +1,90 @@
 #include <iostream>
-#include <vector>
+#include <cstring>
+#include <algorithm>
+#include <queue>
+
+#define endl "\n"
+
 using namespace std;
 int n, k;
-int belt[202];
-bool robot[202] = {0};
-int start_pos = 0;
-int end_pos;
-int inital_robot_pos = -1;
-int result = 1;
-int cnt = 0;
-bool stop = false;
- 
-void rotation_belt(){
-    if(start_pos == 0) // 0이면 맨 뒤의 인덱스로 옮김
-        start_pos = 2 * n - 1;
-    else
-        start_pos--;
-    
-    if(end_pos == 0) // 0이면 맨 뒤의 인덱스로 옮김
-        end_pos = 2 * n - 1;
-    else
-        end_pos--;
- 
-    if(robot[end_pos])
-        robot[end_pos] = false;
-}  
- 
-void move_robot(){
-    if(inital_robot_pos != -1){ 
-        // 첫번째 단계에서는 로봇이 없기 때문에 패스
-        int idx = end_pos;
-        for (int i = 0; i < n-1;i++){
-            int next = idx; // 로봇이 갈 다음 위치
-            if(idx == 0)
-                idx = 2 * n - 1; // 현재 위치      
-            else
-                idx--; 
- 
-            if(!robot[next] && robot[idx] && belt[next] > 0){
-                // 다음 위치에 로봇이 없는지
-                // 현재 위치에 로봇 존재 하는지
-                // 다음 위치의 내구도가 0보다 큰지
-                belt[next] -= 1; // 내구도 감소
-                if(belt[next] == 0){ // 내구도가 0이면
-                    cnt++; // 내구도 0 개수 추가
-                    if(cnt >= k){
-                        stop = true; // 종료 flag
-                        break;
-                    }
-                }
-                robot[next] = true; // 다음 좌표 로봇 true
-                robot[idx] = false; // 현재 좌표 로봇은 옮겼으니 false
-            }
-        }
-        robot[end_pos] = false; // 내리는 위치 로봇 내려줌
- 
-    }
-}
- 
-void put_robot(){
-    if(belt[start_pos] > 0){ 
-        belt[start_pos] -= 1; // 내구도 감소
-        if(belt[start_pos] == 0){ // 종료 조건
-            cnt++;
-            if(cnt >= k){
-                stop = true;
-            }
-        }
-        robot[start_pos] = true; // 로봇 올림
-        inital_robot_pos = 0; // 로봇 올리기 시작.
-    }
-}
- 
-int main(){
+int out = 0;
+
+deque<int> rail;
+deque<bool> robot;
+
+void input() {
     cin >> n >> k;
-    int temp;
-    for (int i = 0; i < 2*n;i++){
-        cin >> belt[i];   
+    for (int i = 0; i < (n * 2); i++) {
+        int a;
+        cin >> a;
+        rail.push_back(a);
+        robot.push_back(false);
     }
-    end_pos = n - 1;
-    while(!stop){
-        rotation_belt();
-        move_robot();
-        put_robot();
-        if(stop) // 종료
+}
+
+void rotate() {
+    rail.push_front(rail.back());
+    rail.pop_back();
+
+    robot.push_front(robot.back());
+    robot.pop_back();
+
+    robot[n - 1] = false;
+}
+
+void robotmove() {
+    for (int i = n - 2; i >= 0; i--) {
+        if ((robot[i]) && (!robot[i + 1]) && (rail[i + 1] > 0)) {
+            robot[i] = false;
+            robot[i + 1] = true;
+            rail[i + 1]--;
+        }
+    }
+    robot[n - 1] = false; // <- 이 줄을 로봇 이동 루프 밖으로 이동
+}
+
+void put() {
+    if (rail[0] > 0 && !robot[0]) {
+        rail[0]--;
+        robot[0] = true;
+    }
+}
+
+int zerocheck() {
+    int check = 0;
+    for (int i = 0; i < n * 2; i++) {
+        if (rail[i] == 0) {
+            check++;
+        }
+    }
+    return check;
+}
+
+int main() {
+    cin.tie(0); cout.tie(0); ios::sync_with_stdio(false);
+
+    input();
+    int count = 1;
+
+    bool go = true;
+    while (go) {
+        //1
+        rotate();
+
+        //2
+        robotmove();
+
+        //3
+        put();
+        
+        int c = zerocheck();
+        if (c >= k) {
+            cout << count << endl;
             break;
-        result++; // 단계 완수
+        }
+
+        count++;
     }
-    cout << result << endl;
+
     return 0;
 }
