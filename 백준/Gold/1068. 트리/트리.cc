@@ -1,44 +1,61 @@
 #include <iostream>
-#include <vector>
+#include <cstring>
+#include <algorithm>
+#include <queue>
+
+#define endl "\n"
 
 using namespace std;
-int n,k,leaf=0,root;
-vector<int> tree[51];
+int n, k;
+
+vector<int> v[51];
+
+int root_node;
+int out_node;
+int reaf_node = 0;
 
 
-int dfs(int node) {
-	if (node == k) return -1;
-	if (!tree[node].size()) {
-		leaf++;
-		return 0 ;
-	}
-	for (int i = 0; i < tree[node].size(); i++) {
-		int tmp = dfs(tree[node][i]);
-		if (tmp == -1 && tree[node].size() == 1)
-			leaf++;
-	}
-	return 0;
+void input() {
+    cin >> n;
+
+    for (int i = 0; i < n; i++) {
+        int a;
+        cin >> a;
+        if (a == -1) {
+            root_node = i;
+        }
+        else {
+            v[a].push_back(i);
+        }
+    }
+
+    //out node
+    cin >> out_node;
+
 }
 
-void solve() {
-	dfs(root);
-	cout << leaf;
+int solve(int in) {
+    if (in == out_node) return -1;
+    if (!v[in].size()) {
+        reaf_node++;
+        return 0;
+    }
+    for (int i = 0; i < v[in].size(); i++) {
+        int tmp = solve(v[in][i]);
+        if (tmp == -1 && v[in].size() == 1) {
+            reaf_node++;
+        }
+    } 
+    return 0;
 }
-
-
 
 int main() {
-	cin >> n;
-	for (int i = 0; i < n; i++) {
-		int t1;
-		cin >> t1;
-		if (t1 == -1)
-			root = i;
-		else
-			tree[t1].push_back(i);
-	}
-	cin >> k;
-	solve();
-	
-	return 0;
+    cin.tie(0); cout.tie(0); ios::sync_with_stdio(false);
+
+    input();C
+    solve(root_node);
+    cout << reaf_node << endl;
+    return 0;
 }
+profile
+Ki
