@@ -1,118 +1,80 @@
 #include <iostream>
 #include <vector>
-#include <queue> // use bfs algorithm
-#include <stdio.h> // use printf, scanf
-#include <cstring> // use memset
- 
-#define MAX_SIZE 20000+1
-#define RED  1
-#define BLUE 2
- 
+#include <queue>
+#define endl "\n"
+#define red 1
+#define blue 2
+
 using namespace std;
- 
-int K, V, E; // 테스트 케이스, 노드, 링크 선언
-vector<int> graph[MAX_SIZE];
-int visited[MAX_SIZE];
- 
-void bfs(int start);
-bool isBipartiteGraph();
- 
-void bfs(int start) {
-    queue<int> q;
-    int color = RED; // 시작 노드의 default 색상은 RED.
- 
-    visited[start] = color;
-    q.push(start);
-    while (!q.empty()) {
-        int now = q.front();
-        q.pop();
- 
-        if (visited[now] == RED) {
-            color = BLUE;
-        }
-        else if (visited[now] == BLUE) {
-            color = RED;
-        }
- 
-        int gsize = graph[now].size();
-        for (int i = 0; i < gsize; i++) {
-            int next = graph[now][i];
-            if (!visited[next]) {
-                visited[next] = color;
-                q.push(next);
-            }
-        }
-    }
+
+int k, v, e;
+vector<int> g[200001];
+int color[200001] = { 0 };
+
+void coloring(int start) {
+	queue<int> q;
+	q.push(start);
+	int c = red;
+	color[start] = c;
+	while (!q.empty()) {
+		int now = q.front();
+		q.pop();
+
+		if (color[now] == red) {
+			c = blue;
+		}
+		else if (color[now] == blue) {
+			c = red;
+		}
+
+		for (int i = 0; i < g[now].size(); i++) {
+			if (!color[g[now][i]]) {
+				color[g[now][i]] = c;
+				q.push(g[now][i]);
+			}
+		}
+
+	}
 }
- 
-void dfs(int start) {
-    if (!visited[start]) {
-        visited[start] = RED;
-    }
- 
-    int gsize = graph[start].size();
-    for (int i = 0; i < gsize; i++) {
-        int next = graph[start][i];
-        if (!visited[next]) {
-            if (visited[start] == RED) {
-                visited[next] = BLUE;
-            }
-            else if (visited[start] == BLUE) {
-                visited[next] = RED;
-            }
-            dfs(next);
-        }
-    }
+
+void check() {
+	for (int i = 1; i <= v; i++) {
+		for (int j = 0; j < g[i].size(); j++) {
+			if (color[i] == color[g[i][j]]) {
+				cout << "NO" << endl;
+				return;
+			}
+		}
+	}
+	cout << "YES" << endl;
+	return;
 }
- 
-bool isBipartiteGraph() {
-    for (int i = 1; i <= V; i++) {
-        int gsize = graph[i].size();
-        for (int j = 0; j < gsize; j++) {
-            int next = graph[i][j];
-            if (visited[i] == visited[next]) {
-                return 0;
-            }
-        }
-    }
-    return 1;
-}
- 
- 
+
 int main() {
-    scanf("%d", &K);
-    while (K--) {
-        scanf("%d %d", &V, &E);
-        
-        /* 그래프 정보 입력 */
-        for (int i = 0; i < E; i++) {
-            int f, s;
-            scanf("%d %d", &f, &s);
-            graph[f].push_back(s);
-            graph[s].push_back(f);
-        }
- 
-        /* 그래프를 BFS 또는 DFS를 통해 탐색 */
-        for (int i = 1; i <= V; i++) { 
-            if (!visited[i]) { // 해당 노드를 아직 방문하지 않았다면,
-                bfs(i);
-                //dfs(i);
-            } 
-        }
- 
-        /* 이분 그래프 여부 체크 및 결과출력 */
-        if (isBipartiteGraph()) {
-            printf("YES\n");
-        }
-        else {
-            printf("NO\n");
-        }
- 
-        /* 그래프 및 방문기록 초기화 */
-        for (int i = 0; i <= V; i++) {
-            graph[i].clear();
-        }
-        memset(visited, false, sizeof(visited));
-    }
-    return 0;
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+	cin >> k;
+	for (int i = 0; i < k; i++) {
+		cin >> v >> e;
+		for (int j = 1; j <= v; j++) {
+			g[j].clear();
+			color[j] = 0;
+		}
+		for (int j = 0; j < e; j++) {
+			int a, b;
+			cin >> a >> b;
+			g[a].push_back(b);
+			g[b].push_back(a);
+		}
+		for (int j = 1; j <= v; j++) {
+			if (!color[j]) {
+				coloring(j);
+			}
+		}
+		check();
+	}
+	
+
+	return 0;
 }
