@@ -1,40 +1,58 @@
 #include <iostream>
-#include <string.h>
 #include <vector>
+#include <cstring>
+#include <algorithm>
+#include <queue>
 
 using namespace std;
+int n,a;
 
-int N;
-int arr[101];
-bool visit[101];
-vector<int> ans;
 
-void DFS(int curr, int start) {
-    if (visit[curr]) {
-        if (start == curr) ans.push_back(curr);
-        return;
-    }
-    
-    visit[curr] = true;
-    DFS(arr[curr], start);
+bool visit[101] = { false };
+int v[101];
+vector<int> result;
+
+void dfs(int start, int end) {
+	// 만약 첫 번째 줄 값하고 두번째가 같으면 결과에 넣음
+	if (v[start] == end) {
+		result.push_back(start);
+		return;
+	}
+	else 
+	{
+		if (visit[start] == false) {
+			visit[start] = true;
+			dfs(v[start], end);
+		}
+	}
+	return;
 }
 
-int main()
-{
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-    
-    cin >> N;
-    for (int i=1; i<=N; i++) cin >> arr[i];
-    
-    // 사이클에 속한 노드들을 전부 선택
-    for (int i=1; i<=N; i++) {
-        memset(visit, 0, sizeof(visit));
-        DFS(i, i);
-    }
-    
-    cout << ans.size() << "\n";
-    for (auto x: ans) cout << x << "\n";
 
-    return 0;
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	cin >> n;
+
+	for (int i = 1; i <= n; i++) {
+		cin >> a;
+		v[i] = a;
+	}
+
+	for (int i = 1; i <= n; i++) {
+		memset(visit, false, sizeof(visit));
+		// 첫 번째 줄 값하고 두번째 줄 값
+		dfs(i, i);
+	}
+
+	sort(result.begin(), result.end());
+
+	cout << result.size() << "\n";
+	for (int i = 0; i < result.size(); i++) {
+		cout << result[i] << "\n";
+	}
+
+	return 0;
 }
