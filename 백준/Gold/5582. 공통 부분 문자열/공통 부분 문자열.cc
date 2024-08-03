@@ -1,26 +1,32 @@
 #include <iostream>
-#include <vector>
-#include <algorithm>
 #include <string>
+
 using namespace std;
- 
+
+string s, t;
+int dp[4003][4003] = { 0 };
+int result = 0;
+
 int main() {
-    string s1, s2;
-    cin >> s1 >> s2;
-    int ans = 0;
-    // dp[s2][s1];
-    vector<vector<int>> dp(s2.length(), vector<int>(s1.length(), 0));
-    for (int i = 0; i < s2.length(); i++) {
-        for (int j = 0; j < s1.length(); j++) {
-            if (s2[i] == s1[j]) {
-                dp[i][j] = 1;
-                if (i >= 1 && j >= 1) {
-                    dp[i][j] += dp[i - 1][j - 1];
-                }
-                ans = max(ans, dp[i][j]);
-            }
-        }
-    }
-    cout << ans;
-    return 0;
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	cin >> s >> t;
+
+	for (int i = 0; i < s.length(); i++) {
+		for (int j = 0; j < t.length(); j++) {
+			if(s[i] == t[j]) {
+				dp[i][j] = 1;
+				if (i >= 1 && j >= 1) {
+					dp[i][j] = dp[i][j] + dp[i - 1][j - 1];
+				}
+				result = max(result, dp[i][j]);
+			}
+		}
+	}
+
+	cout << result;
+
+	return 0;
 }
