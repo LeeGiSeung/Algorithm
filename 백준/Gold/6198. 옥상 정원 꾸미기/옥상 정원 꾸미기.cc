@@ -1,26 +1,43 @@
 #include <iostream>
+#include <algorithm>
+#include <cstring>
 #include <stack>
+#include <vector>
+
 using namespace std;
+int n;
 
-int main(){
-  ios::sync_with_stdio(0);
-  cin.tie(0);cout.tie(0);
+stack<int> building;
 
-  long long ans=0;
-  int n;
-  cin >> n;
-  stack<int> S;
-  while(n--){
-    int h;
-    cin >> h;
-    while(!S.empty() && S.top() <= h)
-      S.pop();
-    
-    // 어차피 empty일 때 size는 0이므로 if문을 지워도 된다.
-    // 연산의 수를 줄이기 위해 if를 넣었다.
-    if(!S.empty())
-      ans += S.size();
-    S.push(h);
-  }
-  cout << ans;
+vector<int> re;
+long long r = 0;
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	cin >> n;
+
+	for (int i = 0; i < n; i++) {
+
+		int a;
+		cin >> a;
+
+
+		while (!building.empty() && a >= building.top()) {
+			building.pop();
+		}
+
+		if (!building.empty()) {
+			r += building.size();
+		}
+
+		building.push(a);
+	
+	}
+
+	cout << r;
+
+	return 0;
 }
