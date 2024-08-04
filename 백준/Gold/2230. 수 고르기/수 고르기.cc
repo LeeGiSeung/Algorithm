@@ -8,7 +8,7 @@ using namespace std;
 
 int n, m, a, k;
 vector<int> v;
-int c = 2000000000;
+int c = 200000000;
 int s = 0;
 int e = 0;
 
