@@ -59,7 +59,7 @@ int main() {
 			else {
 				if (s == i) s++;
 				else if (e == i) e--;
-				else {
+				else if(v[s] + v[e] == v[i]) {
 					good++;
 					break;
 				}
