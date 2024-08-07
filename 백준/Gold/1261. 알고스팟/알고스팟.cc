@@ -1,48 +1,58 @@
 #include <iostream>
+#include <string>
 #include <vector>
-#include <algorithm>
-#include <cstring>
-using namespace std; 
-int map[100][100]; 
-int m, n;
-int dy[4] = { 0,0,1,-1 }; 
-int dx[4] = { 1,-1,0,0 }; 
-int visited[100][100]; 
-int dp[100][100]; 
-void dfs(int y, int x,int cnt) {
-	if (dp[y][x] > cnt) {
-		dp[y][x] = cnt;
-	}
-	else return;
-	for (int i = 0; i < 4; i++) {		
-		int nx = dx[i] + x; 
-		int ny = dy[i] + y; 
-		if (nx < 0 || nx >= n || ny < 0 || ny >= m)continue; 
-		if (visited[ny][nx])continue; 
-		visited[ny][nx] = 1; 
-		if (map[ny][nx] == 1) {
-			dfs(ny, nx, cnt + 1); 
+#include <queue>
+
+using namespace std;
+
+int N, M;
+int board[101][101];
+int dist[101][101];
+int dy[4][2] = { {1,0},{-1,0},{0,1},{0,-1} };
+
+void bfs() {
+	queue<pair<int, int>> q;
+	q.push({ 0,0 });
+	dist[0][0] = 0;
+
+	while (!q.empty()) {
+		int x = q.front().first;
+		int y = q.front().second;
+		q.pop();
+		for (int i = 0; i < 4; i++) {
+			int nx = x + dy[i][0];
+			int ny = y + dy[i][1];
+			if (nx <0 || ny<0 || nx>=M || ny>=N ) continue;
+			if (board[nx][ny] == 1) {
+				if (dist[nx][ny] > dist[x][y] + 1) {
+					dist[nx][ny] = dist[x][y] + 1;
+					q.push({ nx,ny });
+				}
+			}
+			else if(board[nx][ny]==0) {
+				if (dist[nx][ny] > dist[x][y]) {
+					dist[nx][ny] = dist[x][y];
+					q.push({ nx,ny });
+				}
+			}
 		}
-		else {
-			dfs(ny, nx, cnt); 
-		}				
-		visited[ny][nx] = 0; 
 	}
+
 }
+
 int main() {
-	ios::sync_with_stdio(0); 
-	cin.tie(0); 
-	cout.tie(0); 
-	cin >> n >> m; 
-	for (int i = 0; i < m; i++) {
-		string s; cin >> s; 
-		for (int j = 0; j < n; j++) {
-			map[i][j] = s[j]-'0'; 
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cin >> N >> M;
+	string str;
+	for (int i = 0; i < M; i++) {
+		cin >> str;
+		for (int j = 0; j < N; j++) {
+			dist[i][j] = 987654321;
+			board[i][j] = str[j] - '0';
 		}
 	}
-	memset(dp, 1000000, sizeof(dp)); 
-	visited[0][0] = 1; 
-    dfs(0, 0, 0);
-	cout << dp[m - 1][n - 1]; 
-	return 0; 
+	bfs();
+	cout << dist[M - 1][N - 1] << "\n";
+	return 0;
 }
