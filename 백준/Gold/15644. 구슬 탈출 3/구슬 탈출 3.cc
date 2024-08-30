@@ -116,7 +116,7 @@ void solve() {
 
 				track += direction[i];
 
-				if (map[blueX][blueY] == 'O') continue;
+				if (blueCount == -1 ) continue;
 				if (map[redX][redY] == 'O') {
 					cout << track.size() << "\n";
 					cout << track;
