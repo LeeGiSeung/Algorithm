@@ -33,7 +33,7 @@ void solve(int x, int y, int r) {
 			nr += map[nx][ny] - '0';
 		}
 		else if (map[x][y] == '*') {
-			nr *= (map[nx][ny] - '0');
+			nr *= map[nx][ny] - '0';
 		}
 		//연산자가 아니면 연산할 수 없으니까 그냥 이전 값 그대로 넘김
 		solve(nx, ny, nr);
