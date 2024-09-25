@@ -17,7 +17,7 @@ int dfs(int x, int y) {
 	if (eat[x][y] != 0) {
 		return eat[x][y];
 	}
-
+	//이미 방문한 기록이 있으면 위에서 반환했음
 	eat[x][y] = 1;
 
 	//cout << x << " " << y << " " << cur_count << endl;
@@ -31,6 +31,7 @@ int dfs(int x, int y) {
 			}
 		}
 	}
+
 	return eat[x][y];
 }
 
@@ -49,7 +50,9 @@ int main() {
 
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
-			result = max(result, dfs(i, j));
+			if (eat[i][j] == 0) {
+				result = max(result, dfs(i, j));
+			}
 		}
 	}
 
