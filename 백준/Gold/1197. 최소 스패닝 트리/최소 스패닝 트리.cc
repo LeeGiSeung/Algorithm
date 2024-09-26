@@ -1,65 +1,64 @@
 #include <iostream>
-#include <algorithm>
-#include <queue>
 #include <vector>
-
+#include <algorithm>
+#include <cstring>
 using namespace std;
+
 int v, e;
-vector<pair<int, pair<int, int>>> g;
-int parent[10001];
+int mst[10001];
+vector < pair<int, pair<int, int>>> li;
+int result = 0;
+
+//-2,147,483,648보다 크거나 같고, 2,147,483,647보다 작거나 같은 데이터만 입력으로 주어진다.
 
 int find(int x) {
-    if (parent[x] == x) return x;
-    else return parent[x] = find(parent[x]);
-}
+	if (mst[x] == x) return x;
+	return mst[x] = find(mst[x]);
+}	
 
-bool same_parent(int s, int e) {
-    s = find(s);
-    e = find(e);
-    if (s == e)return true;
-    else return false;
-}
-
-void uni(int x, int y) {
-    x = find(x);
-    y = find(y);
-    parent[y] = x;
-}
-
-void input() {
-    cin >> v >> e;
-    for (int i = 0; i < e; i++) {
-        int a, b, c;
-        cin >> a >> b >> c;
-        g.push_back({ c,{a,b} });
-    }
-    sort(g.begin(), g.end());
-    for (int i = 1; i <= v; i++) {
-        parent[i] = i;
-    }
-}
-
-void solve() {
-    int cnt = 0;
-    for (int i = 0; i < g.size(); i++) {
-        int cost = g[i].first;
-        int start = g[i].second.first;
-        int end = g[i].second.second;
-        if (!same_parent(start, end)) {
-            uni(start, end);
-            cnt += cost;
-        }
-    }
-    cout << cnt;
+void _union(int x, int y) {
+	x = find(x);
+	y = find(y);
+	if (x > y) {
+		mst[x] = y;
+	}
+	else {
+		mst[y] = x;
+	}
 }
 
 int main() {
-    cin.tie(0); cout.tie(0); ios::sync_with_stdio(false);
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
 
-    input();
-    solve();
+	cin >> v >> e;
 
-    return 0;
+	//초기화
+	for (int i = 0; i <= v; i++) {
+		mst[i] = i;
+	}
 
+	for (int i = 0; i < e; i++) {
+		int a, b, c;
+		cin >> a >> b >> c;
+		li.push_back({ c,{a,b} });
+	}
 
+	sort(li.begin(), li.end());
+
+	for (int i = 0; i < li.size(); i++) {
+		int x = li[i].second.first;
+		int y = li[i].second.second;
+		//부모가 같이 않으면 사이클이 발생할 수 없음
+		if (find(x) != find(y)) {
+			//연결함
+			_union(x, y);
+			result += li[i].first;
+		}
+	}
+
+	cout << result;
+
+	return 0;
 }
