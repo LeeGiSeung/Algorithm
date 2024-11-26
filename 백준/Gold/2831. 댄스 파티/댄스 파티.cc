@@ -1,237 +1,87 @@
 #include <iostream>
-        
-        
-          
-          #include <vector>
-        
-        
-          
-          #include <algorithm>
-        
-        
-          
-          #include <cmath>
-        
-        
-          
-          using namespace std;
-        
-        
-          
-          
+#include <cstring>
+#include <algorithm>
+#include <vector>
+#include <string>
+using namespace std;
 
-        
-        
-          
-          int main() {
-        
-        
-          
-              ios::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
-        
-        
-          
-              int n, temp;
-        
-        
-          
-              //양수: 자신보다 키가 큰 이성과 춤을 추고 싶다.
-        
-        
-          
-              //음수: 자신보다 키가 작은 이성과 춤을 추고 싶다.
-        
-        
-          
-              vector<int> male_pos;
-        
-        
-          
-              vector<int> male_neg;
-        
-        
-          
-              vector<int> female_pos;
-        
-        
-          
-              vector<int> female_neg;
-        
-        
-          
-          
+int N;
+int COUNT;
 
-        
-        
-          
-              cin >> n;
-        
-        
-          
-              for (int i = 0; i < n; i++) {
-        
-        
-          
-                  cin >> temp;
-        
-        
-          
-                  if (temp > 0) male_pos.push_back(temp);
-        
-        
-          
-                  else male_neg.push_back(abs(temp));
-        
-        
-          
-              }
-        
-        
-          
-              for (int i = 0; i < n; i++) {
-        
-        
-          
-                  cin >> temp;
-        
-        
-          
-                  if (temp > 0) female_pos.push_back(temp);
-        
-        
-          
-                  else female_neg.push_back(abs(temp));
-        
-        
-          
-              }
-        
-        
-          
-          
+vector<int> NEG_MAN;
+vector<int> NEG_WOMAN;
+vector<int> POS_MAN;
+vector<int> POS_WOMAN;
 
-        
-        
-          
-              sort(male_pos.begin(), male_pos.end(), greater<int>());
-        
-        
-          
-              sort(male_neg.begin(), male_neg.end(), greater<int>());
-        
-        
-          
-              sort(female_pos.begin(), female_pos.end(), greater<int>());
-        
-        
-          
-              sort(female_neg.begin(), female_neg.end(), greater<int>());
-        
-        
-          
-          
+int main()
+{
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
 
-        
-        
-          
-              int cnt = 0;
-        
-        
-          
-              int i = 0, j = 0;
-        
-        
-          
-              while (i < male_pos.size() && j < female_neg.size()) {
-        
-        
-          
-                  if (male_pos[i] < female_neg[j]) {
-        
-        
-          
-                      cnt++;
-        
-        
-          
-                      i++;
-        
-        
-          
-                      j++;
-        
-        
-          
-                  }
-        
-        
-          
-                  else {
-        
-        
-          
-                      i++;
-        
-        
-          
-                  }
-        
-        
-          
-              }
-        
-        
-          
-              i = 0; j = 0;
-        
-        
-          
-              while (i < female_pos.size() && j < male_neg.size()) {
-        
-        
-          
-                  if (female_pos[i] < male_neg[j]) {
-        
-        
-          
-                      cnt++;
-        
-        
-          
-                      i++;
-        
-        
-          
-                      j++;
-        
-        
-          
-                  }
-        
-        
-          
-                  else {
-        
-        
-          
-                      i++;
-        
-        
-          
-                  }
-        
-        
-          
-              }
-        
-        
-          
-              cout << cnt;
-        
-        
-          
-              return 0;
-        
-        
-          
-          }
+	cin >> N;
+
+	int MAN_INDEX = 0;
+	int WOMAN_INDEX = 0;
+
+	for (int i = 0; i < N; i++) {
+		int a;
+		cin >> a;
+		if (a < 0) {
+			NEG_MAN.push_back(abs(a));
+		}
+		else {
+			POS_MAN.push_back(a);
+		}
+		
+	}
+	for (int i = 0; i < N; i++) {
+		int a;
+		cin >> a;
+		if (a < 0) {
+			NEG_WOMAN.push_back(abs(a));
+		}
+		else {
+			POS_WOMAN.push_back(a);
+		}
+	}
+	
+	sort(NEG_MAN.begin(), NEG_MAN.end(), greater<int>());
+	sort(POS_MAN.begin(), POS_MAN.end(), greater<int>());
+	sort(NEG_WOMAN.begin(), NEG_WOMAN.end(), greater<int>());
+	sort(POS_WOMAN.begin(), POS_WOMAN.end(), greater<int>());
+
+	WOMAN_INDEX = 0;
+	MAN_INDEX = 0;
+	//남자 음수 
+	//여자는 남자보다 작아야함
+	while (MAN_INDEX < NEG_MAN.size() && WOMAN_INDEX < POS_WOMAN.size()) {
+		if (NEG_MAN[MAN_INDEX] > POS_WOMAN[WOMAN_INDEX]) {
+			COUNT++;
+			WOMAN_INDEX++;
+			MAN_INDEX++;
+		}
+		else {
+			WOMAN_INDEX++;
+		}
+	}
+
+	WOMAN_INDEX = 0;
+	MAN_INDEX = 0;
+	//남자 양수
+	//여자는 남자보다 커야함
+	while (MAN_INDEX < POS_MAN.size() && WOMAN_INDEX < NEG_WOMAN.size()) {
+		if (POS_MAN[MAN_INDEX] < NEG_WOMAN[WOMAN_INDEX]) {
+			COUNT++;
+			WOMAN_INDEX++;
+			MAN_INDEX++;
+		}
+		else {
+			MAN_INDEX++;
+		}
+	}
+
+	cout << COUNT;
+
+	return 0;
+}
