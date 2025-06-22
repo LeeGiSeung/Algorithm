@@ -1,57 +1,48 @@
 #include <string>
 #include <vector>
-
+#include <algorithm>
+#include <set>
 using namespace std;
+vector<int> node(201,0);
 
-vector<int> root;
-
-int union_find(int x) {
-    if (root[x] == x) return x; //자기 자신이 최상위면 그냥 리턴
-    else return root[x] = union_find(root[x]);
-    
+int find_parent(int x){
+    if(x == node[x]) return x;
+    else return find_parent(node[x]);
 }
 
-void union_link(int x, int y) {
-    int _x = union_find(x);
-    int _y = union_find(y);
-
-    if (_x < _y) { //일단 숫자가 작은것들을 최상위 노드로
-        root[_y] = _x;
+void link_node(int x, int y){
+    int tx = find_parent(x);
+    int ty = find_parent(y);
+    if(tx <= ty){
+        node[ty] = tx;
     }
-    else {
-        root[_x] = _y;
+    else{
+        node[tx] = ty;
     }
 }
 
 int solution(int n, vector<vector<int>> computers) {
-    int answer = n; //최대 갯수는 n임
+    int answer = 0;
 
-    for (int i = 0; i < n; i++)
-    {
-        root.push_back(i);
+    for(int i = 0; i<n; i++){
+        node[i] = i;
     }
-
-    for (int i = 0; i < n; i++) { // i = 네트워크 자신
-        for (int j = 0; j < computers[i].size(); j++) { // i가 연결될 네트워크
-            if (i == j) continue; //자기자신은 할 필요없음
-            if (computers[i][j] == 0) continue;
-
-            if (union_find(i) != union_find(j)) { //최상위 루트가 다를 겨우 이어준다.
-                union_link(i, j);
-                answer--; //이어줬으니 정답 -1
+    
+    for(int i = 0; i<computers.size(); i++){
+        for(int j = 0; j<computers[i].size(); j++){
+            if(computers[i][j] == 1){
+                link_node(i,j); //i와 j 연결
             }
-            //최상위 루트가 같다? -> 이미 연결된 것임
         }
     }
-
-
+    
+    set<int> s;
+    
+    for(int i = 0; i<n; i++){
+        s.insert(find_parent(i));
+    }
+    
+    answer = s.size();
+    
     return answer;
-}
-
-int main() {
-    //4, [[1, 0, 0, 1], [0, 1, 1, 0], [0, 1, 1, 1], [1, 0, 1, 1]]
-    vector<vector<int>> v({ {1, 0, 0, 1},{0, 1, 1, 0},{0, 0, 1, 1}, {1, 0, 1 ,1} });
-
-    solution(4, v);
-
 }
