@@ -1,65 +1,42 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-
+#include <iostream>
 using namespace std;
-
 bool check[51];
+int answer = 1e8;
 
-bool check_trans(string &cur_str, vector<string> words) {
-
-    bool match = false;
-
-    string next_cur;
-
-    for (int i = 0; i < words.size(); i++) {
-        if (check[i]) continue;
-
-        int count = 0;
-
-        for (int j = 0; j < cur_str.size(); j++) { //모든 단어의 길이는 똑같음 한 번에 한 개의 알파벳만 바꿀 수
-            if (cur_str[j] != words[i][j]) count++;
-
-            if (count > 1) {
-                break;
-            }
-        }
-
-        if (count == 1) {
-            match = true;
-            check[i] = true;
-            next_cur = words[i];
-        }
+void solve(string begin, string target, vector<string> words, int count){
+    //cout<<begin<<" 과 "<<target<<"비교"<<endl;
+    if(begin == target){
+        answer = min(answer, count);
+        return;
     }
 
-    if (!match) return false;
-
-    cur_str = next_cur;
-
-    return true;
+    for(int i = 0; i<words.size(); i++){
+        if(check[i]) continue;
+        int ct = 0;
+        int index = 0;
+        for(int j = 0; j<words[i].size(); j++){
+            if(begin[j] != words[i][j]) ct++;
+            
+            if(ct >= 2) continue;
+        }
+        if(ct <= 1){
+            check[i] = true;
+            //cout<<words[i]<<" 로 이동"<<endl;
+            solve(words[i], target, words, count + 1);
+            check[i] = false;
+        }
+    }
+    return;
 }
 
 int solution(string begin, string target, vector<string> words) {
-    int answer = 0;
-
-    string cur_str = begin;
-
-    while (true) {
-        if (check_trans(cur_str, words)) {
-            answer++;
-        }
-        else {
-            answer = 0;
-            break;
-        }
-        
-        if (cur_str == target) break;
-    }
+    
+    solve(begin, target, words, 0);
+    
+    if(answer == 1e8) answer = 0;
+    
     return answer;
 }
-int main() {
-
-    vector<string> v({ "hot", "dot", "dog", "lot", "log", "cog" });
-    solution("hit", "cog", v);
-}
-
