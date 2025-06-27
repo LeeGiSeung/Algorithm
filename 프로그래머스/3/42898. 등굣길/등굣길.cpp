@@ -1,49 +1,49 @@
 #include <string>
 #include <vector>
-
+#include <string.h>
+#include <algorithm>
+#include <iostream>
 using namespace std;
-
-int dp[101][101];
-bool check[101][101];
-
+int check[101][101];
 int solution(int m, int n, vector<vector<int>> puddles) {
     int answer = 0;
-
-    //오른쪽과 아래쪽으로만 움직여
-
-    for (int i = 0; i < puddles.size(); i++) {
+    
+    //puddles 물에 잠긴 지역 0~10개
+    memset(check, 1e8, sizeof(check));
+    
+    for(int i = 0; i<puddles.size(); i++){
         int x = puddles[i][0];
         int y = puddles[i][1];
-        check[y][x] = true;
+        check[x][y] = -1; //연못으로 설정
     }
-
-    dp[1][1] = 1;
-    check[1][1] = true;
-
-    for (int i = 1; i <= n; i++) {
-        for (int j = 1; j <= m; j++) {
-            if (check[i][j]) continue; //물가면 못감
-            if (i == 1 && dp[i][j-1] != 0) {
-                dp[i][j] = 1; //끝쪽이면 1가지 경우의 수 밖에 없음
+    
+    for(int i = 0; i<=m; i++){
+        check[i][0] = 0;
+    }
+    
+    for(int i = 0; i<=n; i++){
+        check[0][n] = 0;
+    }
+    
+    check[1][1] = 1;
+    
+    for(int i = 1; i<=m; i++){
+        for(int j = 1; j<=n; j++){
+            if(i == 1 && j == 1) continue;
+            if(check[i][j] == -1) continue; //연못이면 넘어감
+            if(check[i - 1][j] == -1){
+                check[i][j] = check[i][j-1] % 1000000007;
             }
-            else if (j == 1 && dp[i-1][j] != 0) {
-                dp[i][j] = 1; //끝쪽이면 1가지 경우의 수 밖에 없음
+            else if(check[i][j - 1] == -1){
+                check[i][j] = check[i - 1][j] % 1000000007;
             }
-            else {
-                dp[i][j] = (dp[i - 1][j] + dp[i][j - 1]) % 1000000007;
+            else{
+                check[i][j] = (check[i][j - 1] + check[i - 1][j]) % 1000000007;
             }
         }
     }
-
-    answer = dp[n][m] % 1000000007;
-
+    
+    answer = check[m][n];    
+    
     return answer;
 }
-
-
-int main() {
-
-    vector<vector<int>> v({ { 2, 2 } });
-    solution(4, 3, v);
-}
-
