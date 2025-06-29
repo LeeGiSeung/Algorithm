@@ -1,39 +1,34 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-#include <queue>
-
+#include <iostream>
 using namespace std;
 
-priority_queue<int, vector<int>, less<int>> a_pq;
-priority_queue<int, vector<int>, less<int>> b_pq;
+bool check[1000000001];
 
 int solution(vector<int> A, vector<int> B) {
     int answer = 0;
-
-    for (int i = 0; i < A.size(); i++) {
-        a_pq.push(A[i]);
-        b_pq.push(B[i]);
-    }
-
-    while (!a_pq.empty()) {
-        if (a_pq.top() >= b_pq.top()) { //b가 이기는 경우의 수만 계산해야함
-            a_pq.pop();
-        }
-        else if (a_pq.top() < b_pq.top()) {
-            a_pq.pop();
-            b_pq.pop();
+    
+    //b팀이 얻을 수 있는 최대 점수
+    sort(A.begin(), A.end());
+    sort(B.begin(), B.end());
+    
+    int a_size = A.size();
+    int b_size = B.size();
+    int b_index = 0;
+    int a_index = 0;
+    //제일 큰놈은 제일 큰놈으로
+    while(a_index < a_size && b_index < b_size)
+    {
+        if(A[a_index] < B[b_index]){
             answer++;
+            b_index++;
+            a_index++;
+        } 
+        else{
+            b_index++;
         }
     }
-
+    
     return answer;
 }
-
-int main() {
-
-    vector<int> a({ 1,1,1,1 });
-    vector<int> b({ 1,1,1,1 });
-    solution(a,b);
-}
-
