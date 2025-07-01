@@ -1,33 +1,29 @@
 #include <string>
 #include <vector>
+#include <iostream>
 #include <algorithm>
 using namespace std;
 
-vector<vector<int>> camera;
-
 int solution(vector<vector<int>> routes) {
-    int answer = 1;
- 
+    int answer = 0;
+    
+    //최소 몇 대의 카메라를 설치해야 하는지를
     sort(routes.begin(), routes.end());
-
-    int camera_pos = routes[0][1]; //카메라는 우측 좌표만 생각하고있으면 됨 우측 좌표보다 크면 새로운 감시카메라인거
-
-    for (int i = 1; i < routes.size(); i++) {
-        if (routes[i][0] > camera_pos) {
-            answer++;
-            camera_pos = routes[i][1];
+    
+    int camera = routes[0][1];
+    answer++;
+    
+    for(int i = 1; i<routes.size(); i++){
+        //카메라 들어오는 위치가 camera보다 크면
+        //카메라 새로 설치해야함
+        if(routes[i][0] > camera){ 
+            camera = routes[i][1]; //새로운 카메라의 제한은 현재 카메라가 끝나는 부분 
+            answer++; //카메라 증가
         }
-        else if (routes[i][1] < camera_pos) {
-            camera_pos = routes[i][1];
+        else if(routes[i][1] < camera){
+            camera = routes[i][1];
         }
     }
-
+    
     return answer;
 }
-
-int main() {
-    vector<vector<int>> v({ {-20,-15 }, { -14,-5 }, { -18,-13 }, { -5,-3 }});
-
-    solution(v);
-}
-
