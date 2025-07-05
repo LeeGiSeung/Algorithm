@@ -1,72 +1,58 @@
 #include <string>
 #include <vector>
+#include <algorithm>
+#include <iostream>
 #include <set>
-
 using namespace std;
-
-bool check[9];
 set<string> s;
-vector<string> userid;
-vector<string> bannedid;
+vector<string> user;
+vector<string> ban;
+bool check[10];
 
-bool check_ban(string user, string ban) {
-    if (user.size() != ban.size()) return false;
-
-    for (int i = 0; i < user.size(); i++) {
-        if (ban[i] == '*') continue;
-        if (user[i] != ban[i]) return false;
+int check_ban(string user, string ban){
+    if(user.size() != ban.size()){
+        return 0;
     }
-    return true;
+    
+    for(int i = 0; i<ban.size(); i++){
+        
+        if(ban[i] == '*') continue;
+        if(user[i] != ban[i]) return 0;
+        
+    }
+    return 1;
 }
 
-void dfs(int idx) {
-    if (idx == bannedid.size()) {
+void dfs(int idx){
+    if(idx == ban.size()){
         string str = "";
+        
+        for(int i = 0; i<user.size(); i++){
+            if(check[i]) str += i + '0';
+        }
+        
+        s.insert(str);
+        
+    }
+    else
+    {
+        for(int i = 0; i<user.size(); i++){
+            if(check[i]) continue;
 
-        for (int i = 0; i < userid.size(); i++) {
-            if (check[i] == true) {
-                str += i + '0';
+            if(check_ban(user[i], ban[idx])){
+                check[i] = true;
+                dfs(idx + 1);
+                check[i] = false;
             }
         }
-
-        s.insert(str);
-        return;
     }
 
-    for (int i = 0; i < userid.size(); i++) {
-        if (check[i]) continue;
-        if (check_ban(userid[i], bannedid[idx])) {
-            check[i] = true;
-            dfs(idx + 1);
-            check[i] = false;
-        }
-
-    }
-
-}
-
-int solve(int index) {
-    int count = 0;
-
-    dfs(0);
-
-    count = s.size();
-
-    return count;
 }
 
 int solution(vector<string> user_id, vector<string> banned_id) {
-    int answer = 0;
-
-    userid = user_id;
-    bannedid = banned_id;
-
-    answer = solve(0);
-
-    return answer;
-}
-
-int main() {
-
-    return 0;
+    user = user_id;
+    ban = banned_id;
+    dfs(0);
+    
+    return s.size();
 }
