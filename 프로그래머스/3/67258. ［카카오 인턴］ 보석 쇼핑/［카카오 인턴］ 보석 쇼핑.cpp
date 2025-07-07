@@ -1,59 +1,56 @@
 #include <string>
 #include <vector>
-#include <algorithm>
 #include <map>
-#include <set>
-
+#include <iostream>
 using namespace std;
 
 vector<int> solution(vector<string> gems) {
-    vector<int> answer({0,0});
-
-    set<string> s;
-
-    for (int i = 0; i < gems.size(); i++) {
-        s.insert(gems[i]);
+    vector<int> answer;
+    int limit = 0;
+    map<string, int> s;
+    map<string, int> cur;
+    vector<pair<int,int>> v;
+    for(int i = 0; i<gems.size(); i++){
+        s[gems[i]]++;
     }
-
-    int count = s.size(); //종류 갯수
-    int start_index = 0;
-    int end_index = 0;
-    int curcount = 0;
-    map<string, int> m;
-
-    while (true) {
-        if (curcount == count) { //Maxcount에 도달했을시
-            const string &a = gems[start_index++];
-            if (--m[a] == 0) {
-                curcount--;
+    
+    limit = s.size(); //보석이 limit개 만큼 있으면 됨
+    
+    int left = 0;
+    int right = 0;
+    
+    while(right < gems.size()){
+        cur[gems[right]]++; //개추 추가
+        right++;
+        bool check = false;
+        if(cur.size() == limit){ //개수가 똑같아지면 왼쪽을 줄여서 최소
+            check = true;
+            while(cur[gems[left]] > 1){
+                cur[gems[left]]--;
+                left++;
             }
         }
-        else {
-            if (end_index == gems.size()) {
-                break;
-            }
-            //MaxCount에 도달못했으면 endindex를 늘려야함
-            const string& a = gems[end_index++];
-            if (m[a]++ == 0) { //만약 아직 갯수가 없었으면 그냥 count 늘림
-                curcount++;
-            }
-        }
-        if (curcount == count) {
-            if ((answer[0] == 0 && answer[1] == 0) || end_index - start_index - 1< answer[1] - answer[0]) {
-                answer = { start_index + 1, end_index};
-            }
+        
+        if(check){
+            //cout<<left<<" "<<right<<endl;
+            v.push_back({left,right});
         }
     }
-
+    
+    left = 0;
+    right = 0;
+    int rind = 1e8;
+    
+    for(int i = 0; i<v.size(); i++){
+        if(v[i].second - v[i].first < rind){
+            left = v[i].first;
+            right = v[i].second;
+            rind = right - left;
+        }
+    }
+    
+    answer.push_back(left + 1);
+    answer.push_back(right);
+    
     return answer;
-}
-
-int main() {
-    vector<string> v1({
-       "DIA", "RUBY", "RUBY", "DIA", "DIA", "EMERALD", "SAPPHIRE", "DIA"
-        });
-
-    solution(v1);
-
-    return 0;
 }
