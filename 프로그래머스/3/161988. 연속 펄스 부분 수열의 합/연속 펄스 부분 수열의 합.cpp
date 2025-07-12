@@ -1,44 +1,26 @@
 #include <string>
 #include <vector>
+#include <iostream>
 #include <algorithm>
 using namespace std;
 
 long long solution(vector<int> sequence) {
+    
     long long answer = 0;
-
-    long long cur = 0;
-    long long zero = 0;
-
-    vector<int> v;
-
-    for (int i = 0; i < sequence.size(); i++) {
-        v.push_back(sequence[i]);
-        if (i % 2 == 0) {
-            v[i] *= -1;
-        }
-    }
-
-    for (int i = 0; i < sequence.size(); i++) {
-        cur = max(cur, zero) + v[i];
-        answer = max(cur, answer);
+    long long m_ans = 0;
+    long long p_ans = 0;
+    
+    for(int i = 0; i<sequence.size(); i++){
+        int sign = (i % 2 == 0) ? 1 : -1;
+        int sign2 = -sign;
+        
+        m_ans = max(m_ans + 1LL * sequence[i] * sign2, 1LL * sequence[i] * sign2);
+        p_ans = max(p_ans + 1LL * sequence[i] * sign, 1LL * sequence[i] * sign);
+        
+        answer = max({answer, m_ans, p_ans});
     }
     
-    cur = 0;
 
-    for (int i = 0; i < sequence.size(); i++) {
-        cur = max(cur, zero) - v[i];
-        answer = max(cur, answer);
-    }
-
+    
     return answer;
-}
-
-int main() {
-
-    vector<int> v({ 2, 3, -6, 1, 3, -1, 2, 4 });
-    //vector<vector<string>> v({ {"ICN", "ABC"}, {"ICN", "BBB"}, {"JFK", "HND"} });
-
-    solution(v);
-
-    return 0;
 }
