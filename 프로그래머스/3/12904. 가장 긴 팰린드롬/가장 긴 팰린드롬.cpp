@@ -1,41 +1,34 @@
 #include <iostream>
 #include <string>
+#include <iostream>
 #include <algorithm>
-#include <vector>
 using namespace std;
-
-int find_pel(string s,int _left, int _right){
-
-    //cout<<"검사 시작"<<_left<<" "<<_right<<endl;
-    
-    while(_left >= 0 && _right < s.size()){
-        //cout<<"검사 중"<<_left<<" "<<_right<<endl;
-        if(s[_left] != s[_right]){
-            break;
-        }
-        _left -= 1;
-        _right += 1;
-    }
-    
-    return _right - _left - 1;
-    
-}
 
 int solution(string s)
 {
-    int answer=0;
-    vector<string> v;
-    int hol = 0;
-    int jjak = 0;
     
+    vector<vector<bool>> check(2501, vector<bool>(2501, false));
+    int answer=1;
+    int n = s.size();
     for(int i = 0; i<s.size(); i++){
-        hol = find_pel(s, i, i);
-        jjak = find_pel(s, i, i + 1);
-        
-        int cur = max(hol, jjak);
-        answer = max(answer, cur);
-        
+        check[i][i] = true;
     }
-
+    
+    for(int len = 2; len <=n; len++){
+        for(int i = 0; i<=n - len; i++){
+            int j = i + len - 1;
+            
+            if(s[i] == s[j]){
+                if(len == 2){
+                    check[i][j] = true;
+                }
+                
+                if(check[i + 1][j - 1]) check[i][j] = check[i + 1][j - 1];
+                
+                if(check[i][j]) answer = max(answer, len);
+            }
+        }
+    }
+    
     return answer;
 }
