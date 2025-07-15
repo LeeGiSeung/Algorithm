@@ -1,39 +1,29 @@
 #include <string>
 #include <vector>
-#include <queue>
 #include <algorithm>
 #include <iostream>
+#include <queue>
+#include <string.h>
 using namespace std;
+
+int check[26][26][2];
 
 struct DATA{
     int x;
     int y;
     int cost;
-    int direction;
+    int direction; //0 오른쪽 1 아래쪽
 };
 
-int check[26][26][4];
+int dx[4] = {-1,1,0,0};
+int dy[4] = {0,0,-1,1};
 
-int dx[4] = {1,-1,0,0};
-int dy[4] = {0,0,1,-1};
-
-int solution(vector<vector<int>> board) {
-    int answer = 2e9;
-    
+void bfs(int max_x, int max_y, vector<vector<int>> board){
     queue<DATA> q;
-    q.push({0, 0, 0, -1}); 
- 
-    int dest_x = board.size() - 1;
-    int dest_y = board.size() - 1;
-    
-    for(int i = 0; i<=dest_x; i++){
-        for(int j = 0; j<=dest_y; j++){
-            for(int z = 0; z<4; z++){
-                check[i][j][z] = 2e9;
-            }
-        }
-    }
-    
+    q.push({0,0,0,0});
+    q.push({0,0,0,1});
+    check[0][0][0] = 0;
+    check[0][0][1] = 0;
     while(!q.empty()){
         int x = q.front().x;
         int y = q.front().y;
@@ -41,43 +31,56 @@ int solution(vector<vector<int>> board) {
         int direction = q.front().direction;
         q.pop();
         
-        if(x == dest_x && y == dest_y){ //목적지에 도착했을때
-            answer = min(cost, answer);
+        if(x == max_x && y == max_y){
             continue;
         }
-        else{
-            //direction == 0 위아래
-            //direction == 1 좌우
-            
-            for(int i = 0; i<4; i++){ //i 0~ 1 위아래, i 2 ~ 3 좌우 
-                int nx = dx[i] + x;
-                int ny = dy[i] + y;
-                int ndir = direction;
-                int ncost = cost;
-                
-                if(nx > dest_x || nx < 0) continue; //범위 넘으면 안됨
-                if(ny > dest_y || ny < 0) continue;
-                if(board[nx][ny] == 1) continue; //갈 수 없으면 안됨
-                
-                if (direction == i || direction == -1) { // 같은 방향 (0==0 or 1==1)
-                    ncost += 100;
-                    
-                } else 
-                {
-                    ncost += 600;                 
+        
+        for(int i = 0; i<4; i++){
+            int nx = x + dx[i];
+            int ny = y + dy[i];
+            int ncost = cost;
+            //직진인지 커브인지
+            if(nx < 0 || ny < 0 || nx > max_x || ny > max_y) continue; //범위 넘으면 안됨
+            if(board[nx][ny] != 0) continue;
+            int ndir = (i<=1) ? 0 : 1;
+            if(ndir == direction){ 
+                //직진
+                ncost += 100;
+                if(check[nx][ny][ndir] > ncost || check[nx][ny][ndir] == -1){
+                    check[nx][ny][ndir] = ncost;
+                    //cout<<nx<<" "<<ny<<" "<<ndir<<" "<<ncost<<endl;
+                    q.push({nx,ny,ncost,direction});
                 }
-
-                if(check[nx][ny][i] >= ncost){
-                    check[nx][ny][i] = ncost; //check 업데이트
-                    q.push({nx,ny,ncost, i});
+            }
+            else{ //방향이 다르다
+                ncost += 600;
+                if(check[nx][ny][ndir] > ncost || check[nx][ny][ndir] == -1){
+                    check[nx][ny][ndir] = ncost;
+                    //cout<<nx<<" "<<ny<<" "<<ndir<<" "<<ncost<<endl;
+                    q.push({nx,ny,ncost,ndir});
                 }
             }
         }
-        
     }
-    
-    //더 멀리 돌아온건 먼저 온(짧은) 것 보다 먼저 올 수 없음
-    
+}
+
+int solution(vector<vector<int>> board) {
+    int answer = 0;
+    memset(check,-1,sizeof(check));
+    //직선 도로 하나를 만들 때는 100
+    //코너를 하나 만들 때는 500원이 추가로 듭니다.
+    int s = board.size() - 1;
+    bfs(s,s,board);
+
+    if(check[s][s][0] == -1){
+        answer = check[s][s][1];
+    }
+    else if(check[s][s][1] == -1){
+        answer = check[s][s][0];
+    }
+    else{
+        answer = min(check[s][s][0],check[s][s][1]);
+    }
     
     return answer;
 }
