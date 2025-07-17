@@ -1,74 +1,59 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-
+#include <iostream>
 using namespace std;
 
+vector<int> v;
+
+string make_str(int ti){
+    string re;
+
+    int hour = ti / 60;
+    int minute = ti % 60;
+
+    if (hour < 10) re += "0";
+    re += to_string(hour);
+    re += ":";
+
+    if (minute < 10) re += "0";
+    re += to_string(minute);
+
+    return re;
+}
+
 string solution(int n, int t, int m, vector<string> timetable) {
-    string answer = "";
-    
-    //09 부터 총 n회 t간격으로 도착한다. 셔틀하나에 m명의 승객이 탈 수 있다.
-    
-    //timetable : 크루원들이 도착한 시간
-    sort(timetable.begin(), timetable.end());
-    vector<int> timeint;
-    
-    //01234
-    //09:00
-    
-    for(int i = 0; i<timetable.size(); i++){
-        timeint.push_back(stoi(timetable[i].substr(0,2)) * 60 + stoi(timetable[i].substr(3,2)));
+    string answer;
+    vector<int> v;
+
+    for(string time : timetable){
+        int hour = stoi(time.substr(0, 2));
+        int minute = stoi(time.substr(3, 2));
+        v.push_back(hour * 60 + minute);
     }
+
+    sort(v.begin(), v.end());
     
-    int index = 0;
     int bustime = 540;
-    int result = 0;
-    int crewboard = 0; //탑승한 크루
-    for(int i = 1; i<=n; i++){
-        crewboard = 0;
-        while(crewboard < m && index < timetable.size()){
-            if(timeint[index] <= bustime){
-                index++;
-                crewboard++;
+    int idx = 0;
+    
+    for(int i = 0; i<n; i++){
+        int count = 0;
+        
+        while(idx < timetable.size() && v[idx] <= bustime && count < m){
+            idx++;
+            count++;
+        }
+        
+        if(i == n - 1){
+            if(count < m){
+                return make_str(bustime);
             }
             else{
-                break;
+                return make_str(v[idx - 1] - 1);
             }
         }
-        if(i == n){
-            if(crewboard < m){
-        result = bustime;
-    }
-    else{
-        result = timeint[index - 1] - 1;
-    }
-        }
-
         bustime += t;
-        
-    }
-    
-
-    
-    int hour = result / 60;
-    
-    if(hour < 10){
-        answer += "0";
-        answer += to_string(hour);
-    }
-    else{
-        answer += to_string(hour);
-    }
-    
-    int minutes = result % 60;
-    answer += ":";
-    
-    if(minutes < 10){
-        answer += "0";
-        answer += to_string(minutes);
-    }
-    else{
-        answer += to_string(minutes);
     }
     
     return answer;
