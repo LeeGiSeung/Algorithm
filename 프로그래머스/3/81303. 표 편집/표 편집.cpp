@@ -1,78 +1,72 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-#include <stack>
 #include <iostream>
+#include <stack>
 using namespace std;
 
 struct Node{
-    int idx;
     Node* next;
-    Node* prev;
-    Node(int _idx, Node* _prev, Node* _next) : idx(_idx), next(_next), prev(_prev) {} //생성자
+    Node* back;
+    int num;
+    Node(Node* next, Node* back, int num) : num(num), back(back), next(next) {}
 };
 
 string solution(int n, int k, vector<string> cmd) {
-    string answer(n, 'O');
-    
-    Node* cur = new Node(0, NULL,NULL); //0번째 노드 생성
-    Node* select = cur;
-    
     stack<Node*> st;
+    string answer(n,'O');
+    
+    //Node* next;
+    //Node* back;
+    //int num;
+    
+    Node *z = new Node(NULL,NULL,0);
+    Node *select = z;
     
     for(int i = 1; i<n; i++){
-        cur->next = new Node(i, cur, NULL);
-        cur = cur->next;
+        z->next = new Node(NULL, z, i); //현재 고른 노드의 다음은 새롭게 만든노드
+        z = z->next; //현재 노드를 새롭게 만든노드로 변경
     }
     
     for(int i = 0; i<k; i++){
         select = select->next;
     }
     
-    for(int i = 0; i<cmd.size(); i++){
-        string c = cmd[i];
-        if(c == "C"){
+    //cmd 명령어가 담긴 cmd
+    for(string s : cmd){
+        if(s == "C"){
             st.push(select);
-            
-            if(select->prev != NULL) //다음이 비어있지 않으면
-            {
-                select->prev->next = select->next;
+            if(select->back != NULL){
+                select->back->next = select->next;
             }
-            
             if(select->next != NULL){
-                select->next->prev = select->prev;
+                select->next->back = select->back;
             }
             
             if(select->next == NULL){
-                select = select->prev;
-            }
-            else{ //다음 노선이 안비어있으면 그냥 다음 노선 가면됨
-                select = select->next;
-            }
-            
-        }
-        else if(c == "Z"){ //가장 최근에 삭제된 행 복구
-            Node* rep = st.top();
-            st.pop();
-            
-            if(rep->prev != NULL){
-                rep->prev->next = rep;
-            }
-            
-            if(rep->next != NULL){
-                rep->next->prev = rep;
-            } 
-        }
-        else{
-            int count = stoi(cmd[i].substr(2));
-            
-            if(c[0] == 'U'){
-                for(int i = 0; i<count; i++){
-                    select = select->prev;
-                }
+                select = select->back;
             }
             else{
-                for(int i = 0; i<count; i++){
+                select = select->next;
+            }
+        }
+        else if(s == "Z"){
+            Node *cur = st.top();
+            st.pop();
+            if(cur->next != NULL){
+                cur->next->back = cur;
+            }
+            if(cur->back != NULL){
+                cur->back->next = cur;
+            }
+        }
+        else{
+            int a = stoi(s.substr(2));
+            for(int i = 0; i<a; i++){
+                if(s[0] == 'U'){
+                    select = select->back;
+                }
+                if(s[0] == 'D'){
                     select = select->next;
                 }
             }
@@ -80,7 +74,8 @@ string solution(int n, int k, vector<string> cmd) {
     }
     
     while(!st.empty()){
-        answer[st.top()->idx] = 'X';
+        Node* cur = st.top();
+        answer[cur->num] = 'X';
         st.pop();
     }
     
