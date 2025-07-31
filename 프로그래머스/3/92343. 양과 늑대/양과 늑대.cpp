@@ -1,63 +1,57 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <iostream>
+#include <string.h>
 using namespace std;
-vector<int> node[20];
-int msheep = 0;
-vector<int> state;
-bool check[20][20][20];
 
-void solve(int cur, int sheep, int wolf){
-    if(cur == 0){
-        msheep = max(sheep, msheep);
-    }
+vector<int> node[20]; //노드 연결 상태
+vector<int> visit[20];
+int check[20]; //노드가 양인지 늑대인지
+
+int max_sheep = 0;
+void solve(int cur, int sheep, int wolf, vector<int> visit){
+    if(check[cur] == 0) sheep++;
+    else if(check[cur] == 1) wolf++;
+    
+    if(wolf >= sheep) return;
+    
+    max_sheep = max(max_sheep, sheep);
+    
+    vector<int> newvisit;
+    newvisit = visit;
+    newvisit.erase(remove(newvisit.begin(), newvisit.end(), cur), newvisit.end());
     
     for(int i = 0; i<node[cur].size(); i++){
-        int next_node = node[cur][i];
-        if(state[next_node] == 0){ //양이면
-            if(check[next_node][sheep + 1][wolf] == false){
-                check[next_node][sheep + 1][wolf] = true;
-                state[next_node] = -1;
-                solve(next_node, sheep + 1, wolf);
-                state[next_node] = 0;
-                check[next_node][sheep + 1][wolf] = false;
-            }
-        }
-        else if(state[next_node] == 1){ //늑대이면
-            if(check[next_node][sheep][wolf + 1] == false){
-                if(sheep > wolf + 1){
-                    check[next_node][sheep][wolf + 1] = true;
-                    state[next_node] = -1;
-                    solve(next_node, sheep, wolf + 1);
-                    state[next_node] = 1;
-                    check[next_node][sheep][wolf + 1] = false;
-                }
-            }
-        }
-        else{
-            if(check[next_node][sheep][wolf] == false){
-                check[next_node][sheep][wolf] = true;
-                solve(next_node, sheep, wolf);
-                check[next_node][sheep][wolf] = false;
-            }
-        }
+        newvisit.push_back(node[cur][i]);
     }
+    
+    for(int i : newvisit){
+        solve(i, sheep, wolf, newvisit);
+    }
+    
+    return;
+    
 }
 
 int solution(vector<int> info, vector<vector<int>> edges) {
     int answer = 0;
-
+    
+    check[0] = 0;
+    memset(visit, 0, sizeof(visit));
+    for(int i = 0; i<info.size(); i++){
+        check[i] = info[i];
+    }
+    
     for(int i = 0; i<edges.size(); i++){
         int x = edges[i][0];
         int y = edges[i][1];
+        
         node[x].push_back(y);
-        node[y].push_back(x);
     }
-    
-    state = info;
-    state[0] = -1; //최정상 루트
-    solve(0,1,0);
-    
-    answer = msheep;
-    return answer ;
+    vector<int> v;
+    v.push_back(0);
+    solve(0, 0, 0, v);
+    answer = max_sheep;
+    return answer;
 }
