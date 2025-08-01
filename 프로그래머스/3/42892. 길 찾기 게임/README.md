@@ -1,10 +1,10 @@
 # [level 3] 길 찾기 게임 - 42892 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/42892#) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/42892) 
 
 ### 성능 요약
 
-메모리: 9.35 MB, 시간: 34.23 ms
+메모리: 9.1 MB, 시간: 22.96 ms
 
 ### 구분
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2025년 06월 11일 15:48:34
+2025년 08월 01일 15:10:19
 
 ### 문제 설명
 
