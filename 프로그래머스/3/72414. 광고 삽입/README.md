@@ -1,10 +1,10 @@
 # [level 3] 광고 삽입 - 72414 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/72414#qna) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/72414) 
 
 ### 성능 요약
 
-메모리: 54.4 MB, 시간: 116.76 ms
+메모리: 53.8 MB, 시간: 4840.34 ms
 
 ### 구분
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2025년 06월 13일 17:32:00
+2025년 08월 04일 15:47:37
 
 ### 문제 설명
 

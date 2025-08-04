@@ -2,94 +2,92 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <queue>
 using namespace std;
 
-int playtime;
-int advtime;
+int cnt[360001];
 
-int ct = 0;
-int gotime = 100000000;
-int answertime = 0;
-int maxtime = 0;
+vector<vector<int>> v;
+int max_count = 0;
+bool sv(const vector<int> &a, const vector<int> &b){
+    if(a[0] != b[0]) return a[0] < b[0];
+    else return a[1] < b[1];
+}
 
-string SetTime(int answertime){
-    string answer = "";
-    if(answertime / 3600 < 10){
-        answer += "0";
-    }
-    answer += to_string(answertime / 3600);
-    answertime %= 3600;
-    answer += ":";
-    if(answertime / 60 < 10){
-        answer += "0";
-    }
-    answer += to_string(answertime / 60);
-    answertime %= 60;
-    answer += ":";
-    if(answertime  < 10){
-        answer += "0";
-    }
-    answer += to_string(answertime);
-    return answer;
+int str_to_int(string s){
+    int cur = 0;
+    
+    cur += stoi(s.substr(0,2)) * 3600; //시간
+    cur += stoi(s.substr(3,2)) * 60; //분
+    cur += stoi(s.substr(6,2));
+    
+    return cur;
+}
+
+string int_to_str(int num){
+    string s;
+    int hour = num / 3600;
+    num %= 3600;
+    int min = num / 60;
+    int sec = num % 60;
+
+    if (hour < 10) s += '0';
+    s += to_string(hour);
+    s += ':';
+    if (min < 10) s += '0';
+    s += to_string(min);
+    s += ':';
+    if (sec < 10) s += '0';
+    s += to_string(sec);
+
+    return s;
 }
 
 string solution(string play_time, string adv_time, vector<string> logs) {
+    if(play_time == adv_time){
+        return "00:00:00";
+    }
     string answer = "";
-    //play_time 동영상 재생 시간 길이
-    //adv_time 공익광고의 재생시간 길이
-    //01234567
-    //02:03:55
+    int playtime = 0;
+    int advtime = 0;
     
-    vector<long long>Total_Play_Time(360001, 0);
+    playtime = str_to_int(play_time);
+    advtime = str_to_int(adv_time);
     
-    playtime += stoi(play_time.substr(6,2));
-    playtime += stoi(play_time.substr(3,2)) * 60;
-    playtime += stoi(play_time.substr(0,2)) * 60 * 60;
-    //cout<<playtime<<endl;
-    //00:14:15
-    
-    advtime += stoi(adv_time.substr(6,2));
-    advtime += stoi(adv_time.substr(3,2)) * 60;
-    advtime += stoi(adv_time.substr(0,2)) * 60 * 60;
-    //cout<<advtime<<endl;
-    
-    for(int i = 0; i<logs.size(); i++){
-        //logs가 300000개
+    queue<int> q;
+    for(string cs : logs){
+        int s = str_to_int(cs.substr(0,8));
+        int e = str_to_int(cs.substr(9,8));
         
-        //01234567890123456
-        //01:20:15-01:45:14
-        
-        string start = logs[i].substr(0, 8);
-        string end = logs[i].substr(9, 8);
-        
-        int starttime = stoi(start.substr(0,2)) * 3600 + stoi(start.substr(3,2)) * 60 + stoi(start.substr(6,2));
-        int endtime = stoi(end.substr(0,2)) * 3600 + stoi(end.substr(3,2)) * 60 + stoi(end.substr(6,2));
-        
-        Total_Play_Time[starttime] += 1;
-        Total_Play_Time[endtime] -= 1;
-    }
-    
-    for(int i = 1; i<=playtime; i++){
-
-        Total_Play_Time[i] += Total_Play_Time[i - 1];
-    }
-    for(int i = 1; i<=playtime; i++){
-
-        Total_Play_Time[i] += Total_Play_Time[i - 1];
-    }
-    
-    long long max_view = Total_Play_Time[advtime - 1];  // 0초부터 시작
-    long long answer_time = 0;
-    
-    for (int i = advtime; i <= playtime; i++) {
-        long long current_view = Total_Play_Time[i] - Total_Play_Time[i - advtime];
-        if (current_view > max_view) {
-            max_view = current_view;
-            answer_time = i - advtime + 1;
+        for(int i = s; i<e; i++){
+            cnt[i] += 1;
         }
     }
     
-    answer = SetTime(answer_time);
+    int index = 0;
+    long long cur = 0;
+    long long result = 0;
+    
+    for(int i = 0; i<advtime; i++){
+        cur += cnt[i];
+        q.push(cnt[i]);
+    }
+    
+    result = cur;
+    
+    for(int i = advtime; i<playtime; i++){
+        cur -= q.front();
+        q.pop();
+        cur += cnt[i];
+        q.push(cnt[i]);
+        
+        if(cur > result){
+            result = cur;
+            index = i - advtime + 1;
+        }
+    }
+    
+    answer = int_to_str(index);
     
     return answer;
 }
