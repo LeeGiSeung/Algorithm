@@ -1,47 +1,46 @@
 #include <string>
 #include <vector>
-#include <algorithm>
 #include <iostream>
+#include <algorithm>
 using namespace std;
 
 int solution(int n, vector<int> weak, vector<int> dist) {
     int answer = 1e8;
+    int wallsize = weak.size();
     
-    //취약 지점의 위치는 정북 방향 지점으로부터 시계 방향으로 떨어진 거리
-    //친구들은 출발 지점부터 시계, 혹은 반시계 방향으로 외벽을 따라서만 이동
-
-    sort(dist.begin(), dist.end());
-    
-    int size_w = weak.size();
-    
-    for(int i = 0; i<size_w - 1; i++){
-        weak.push_back(weak[i] + n);
+    for(int i = 0; i<wallsize; i++){
+        weak.push_back(weak[i] + n); //11시에서 1시로 가는 한바뀌 도는 것도 생각해야함
     }
     
     do{
-        for(int i = 0; i<size_w; i++){
-            int start = weak[i];
-            int end = weak[size_w + i - 1];
-            //start 지점과 end 지점 설정
+        for(int i = 0; i<wallsize; i++){
+            int startwall = weak[i];
+            int endwall = weak[i + wallsize - 1];
+            
             for(int j = 0; j<dist.size(); j++){
-                start += dist[j];
+                startwall += dist[j];
                 
-                if(start >= end)
-                {
-                    answer = min(answer, j + 1);
+                if(startwall >= endwall){ //dist 추가했는데 만약 endwall 넘으면 
+                    answer = min(answer, j+1);
                     break;
                 }
-                for(int z = i + 1; z<weak.size(); z++){
-                    if(weak[z] > start){
-                        start = weak[z];
+                
+                //dist 더해진 startwall 기준으로 다음벽 검사
+                for(int z = 0; z<weak.size(); z++){
+                    if(startwall < weak[z]){
+                        startwall = weak[z];
                         break;
                     }
                 }
             }
         }
     }while(next_permutation(dist.begin(), dist.end()));
-
-    if(answer == 1e8) return -1;
+    
+    //1, 5, 6, 10, 13, 17, 18
+    
+    //1, 3, 4, 9, 10, 13, 15, 16, 21
+    
+    if(answer == 1e8) answer = -1;
     
     return answer;
 }
