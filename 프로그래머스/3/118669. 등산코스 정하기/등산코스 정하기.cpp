@@ -1,65 +1,63 @@
 #include <string>
 #include <vector>
-#include <string.h>
-#include <queue>
 #include <algorithm>
+#include <queue>
+#include <string.h>
 using namespace std;
-vector<int> answer;
-vector<pair<int,int>> path[50001];
-int intensity[50001];
-bool isSummit[50001];
 
-void solve(vector<int> &v){
-    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
-    vector<pair<int,int>> temp;
+priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
+bool check[50001];
+int distcheck[50001];
+vector<pair<int,int>> node[50001];
+vector<int> answer(2,-1);
+vector<int> solution(int n, vector<vector<int>> paths, vector<int> gates, vector<int> summits) {
     
-    memset(intensity,-1, sizeof(intensity));
+    memset(distcheck, -1, sizeof(distcheck));
+    for(int s : summits){
+        check[s] = true;
+    }
     
-    for(auto a : v){
-        pq.push({0,a});
-        intensity[a] = 0;
+    for(vector<int> v : paths){
+        int x = v[0];
+        int y = v[1];
+        int a = v[2];
+        node[x].push_back({y,a});
+        node[y].push_back({x,a});
+    }
+    
+    for(int i : gates){
+        pq.push({0,i});
     }
     
     while(!pq.empty()){
         int dist = pq.top().first;
-        int node = pq.top().second;
+        int cur = pq.top().second;
         pq.pop();
         
-        if(dist > intensity[node]) continue;
-        
-        if(isSummit[node]){
-            temp.push_back({dist,node});
+        if(check[cur]){ //산봉우리이면
+            if(answer[1] == -1 || answer[1] > dist){
+                answer[1] = dist;
+                answer[0] = cur;
+            }
+            else if(answer[1] == dist && answer[0] > cur){
+                answer[0] = cur;
+            }
+            
             continue;
         }
         
-        for(auto a : path[node]){
-            int next_dist = a.first;
-            int next_node = a.second;
+        for(int i = 0; i<node[cur].size(); i++){
+            int next_cur = node[cur][i].first;
+            int next_dist = node[cur][i].second;
+            next_dist = max(next_dist, dist);
             
-            if(intensity[next_node] == -1 || max(dist, next_dist) < intensity[next_node]){
-                intensity[next_node] = max(dist, next_dist);
-                pq.push({intensity[next_node],next_node});
+            if(distcheck[next_cur] == -1 || distcheck[next_cur] > next_dist){
+                distcheck[next_cur] = next_dist;
+                pq.push({next_dist, next_cur});
             }
         }
+        
     }
-    sort(temp.begin(), temp.end());
-    answer.push_back(temp[0].second);
-    answer.push_back(temp[0].first);
-    return;
-}
-
-vector<int> solution(int n, vector<vector<int>> paths, vector<int> gates, vector<int> summits) {
-    
-    for(auto a : paths){
-        path[a[0]].push_back({a[2],a[1]});
-        path[a[1]].push_back({a[2],a[0]});
-    }
-    
-    for(auto a : summits){
-        isSummit[a] = true;
-    }
-    
-    solve(gates);
     
     return answer;
 }
