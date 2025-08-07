@@ -1,56 +1,43 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-#include <queue>
 #include <iostream>
 using namespace std;
-int answer = 0;
 
 int solution(int n, vector<int> cores) {
-    
-    if(n <= cores.size()){ //제시하는 작업이 cores 보다 작으면 바로 return
-        return n;
-    }
-    vector<int> v;
-    v = cores;
-    sort(v.begin(), v.end());
-    int left = 0;
-    int right = 500000001;
-    int mid = 0;
-    
+    int answer = 0;
+    long long time = 0;
+    long long mid = 0;
+    if(n - cores.size() <= 0) return n;
+    long long count = 0;
+    long long left = 0;
+    long long right = 100000000;
     while(left <= right){
-        mid = (left + right) / 2;
-        int count = cores.size();
+        mid = (right + left) / 2;
+
+        count = cores.size(); //처음에 3개는 모두 채울 수 있으니까
+        //n 해결해야 할 일거리
         for(int i = 0; i<cores.size(); i++){
-            count += mid / cores[i];
-            
-            if(count >= n){
-                break;
-            }
+            count += mid / cores[i]; //해당 시간으로 할 수 있는 일거리
+            if(count >= n) break;
         }
         
         if(count >= n){
-            //더 많은걸 지우고있으면
             right = mid - 1;
         }
         else{
             left = mid + 1;
         }
     }
-    
-    //mid : 모든 작업을 끝낸 시간
-    int count = cores.size();
+    count = cores.size();
     for(int i = 0; i<cores.size(); i++){
-        count += right / cores[i]; //해결한 갯수를 셈
+        count += right / cores[i];
     }
-    
+    cout<<left<<endl;
+    cout<<count<<endl;
     for(int i = 0; i<cores.size(); i++){
-        if((right + 1) % cores[i] == 0){
-            count++;
-        }
-        if(count == n){
-            return i + 1;
-        }
+        if((right + 1) % cores[i] == 0) count++;
+        if(count == n) return i + 1;
     }
     
     return answer;
