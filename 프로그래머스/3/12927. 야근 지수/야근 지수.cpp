@@ -1,39 +1,31 @@
-#include <algorithm>
 #include <string>
 #include <vector>
-
+#include <algorithm>
+#include <iostream>
+#include <cmath>
+#include <queue>
 using namespace std;
 
 long long solution(int n, vector<int> works) {
     long long answer = 0;
+    priority_queue<int> pq(works.begin(), works.end());
 
-    long long sum = 0;
-
-    
-
-    for (int i = 0; i < works.size(); i++) {
-        sum += works[i];
+    while(n-- > 0 && !pq.empty()){
+        int top = pq.top(); pq.pop();
+        if(top == 0) break; // 이미 모든 일이 0이면 종료
+        pq.push(top - 1);
     }
 
-    sum -= (works.size() / n) * n;
-
-    sum -= (works.size() % n);
-
-    int a = sum / n;
-    int b = sum % n;
-
-    for (int i = 0; i < works.size(); i++) {
-        if (b > 0) {
-            answer += (a + 1) * (a + 1);
-            b--;
-        }
+    while(!pq.empty()){
+        long long w = pq.top(); pq.pop();
+        answer += w * w;
     }
 
     return answer;
+    
 }
 
-int main() {
-
-
+int main(){
+    
+    return 0;
 }
-
