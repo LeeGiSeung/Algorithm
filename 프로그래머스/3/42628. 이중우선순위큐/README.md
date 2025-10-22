@@ -1,10 +1,10 @@
 # [level 3] 이중우선순위큐 - 42628 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/42628) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/42628?gad_source=1&gad_campaignid=22199869887&gbraid=0AAAAAC_c4nBHxeHQ3SpmPh63KpF74cSFU&gclid=CjwKCAjw3tzHBhBREiwAlMJoUrgCnHuljbtpCrpVe3-JYT9qEJz27wpzH4M9At4tcg5wHWZ8CjlbNRoC-QYQAvD_BwE) 
 
 ### 성능 요약
 
-메모리: 11 MB, 시간: 10.87 ms
+메모리: 10.9 MB, 시간: 11.36 ms
 
 ### 구분
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2025년 06월 23일 14:18:57
+2025년 10월 22일 15:01:49
 
 ### 문제 설명
 

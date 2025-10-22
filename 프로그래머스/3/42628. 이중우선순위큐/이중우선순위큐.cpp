@@ -1,38 +1,37 @@
 #include <string>
 #include <vector>
+#include <queue>
 #include <algorithm>
 #include <iostream>
 #include <set>
 using namespace std;
 
 vector<int> solution(vector<string> operations) {
-    vector<int> answer;
-    
-    multiset<int> ms;
-    
-    for(int i = 0; i<operations.size(); i++){
-        string s = operations[i];
-        
-        if(s.find("I") == 0){
-            int a = stoi(s.substr(s.find(" ") + 1));
-            //cout<<a<<endl;
-            ms.insert(a);
+    vector<int> answer(2);
+    multiset<int> st;
+    for(string s : operations){
+        int a = stoi(s.substr(s.find(" ") + 1));
+        if(s[0] == 'I'){
+            st.insert(a);
         }
-        else if(s.find("D 1") == 0 && ms.size() != 0){
-            ms.erase(--ms.end());
-        }
-        else if(s.find("D -1") == 0 && ms.size() != 0){
-            ms.erase(ms.begin());
+        else if(!st.empty()){
+            if(s == "D 1"){
+            //최대값 빼기
+            st.erase(--st.end());
+            }
+            else if(s == "D -1"){
+                //최소값 빼기
+                st.erase(st.begin());
+            }
         }
     }
     
-    if(ms.empty()){
-        answer.push_back(0);
-        answer.push_back(0);
+    if(st.empty()){
+        answer[0] = 0; answer[1] = 0;
     }
     else{
-        answer.push_back(*ms.rbegin());
-        answer.push_back(*ms.begin());
+        answer[0] = *st.rbegin();
+        answer[1] = *st.begin();
     }
     
     return answer;
