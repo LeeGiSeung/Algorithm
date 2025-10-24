@@ -3,42 +3,60 @@
 #include <algorithm>
 #include <iostream>
 #include <map>
+#include <unordered_map>
 using namespace std;
 
-bool solve(const pair<string,int> &a, const pair<string,int> &b){
-    return a.second > b.second;
+map<string, int> music; //노래 play 합친거
+map<string, vector<pair<int,int>>> musicrank;
+
+bool st(pair<int,int> &a, pair<int,int> &b){
+    if(a.first != b.first)
+        return a.first > b.first;
+    else
+        return a.second < b.second;
 }
 
-bool solve2(const pair<int,int> &a, const pair<int,int> &b){
+bool stt(pair<string, int> &a, pair<string, int> &b){
     return a.second > b.second;
 }
 
 vector<int> solution(vector<string> genres, vector<int> plays) {
     vector<int> answer;
-    map<string,vector<pair<int,int>>> m1;
-    map<string,int> m2;
     
+    //장르 정렬
     for(int i = 0; i<genres.size(); i++){
-        m2[genres[i]] += plays[i];
-        m1[genres[i]].push_back({i, plays[i]});
+        //i : 고유 번호
+        string mus = genres[i];
+        int play = plays[i];
+        music[mus] += play;
+        
+        musicrank[mus].push_back({play,i});
+        
+    }
+    vector<pair<string,int>> musiclist;
+    
+    for(auto a : music){
+        musiclist.push_back({a.first, a.second});
     }
     
-    vector<pair<string,int>> v(m2.begin(), m2.end());
+    sort(musiclist.begin(), musiclist.end(), stt);
     
-    sort(v.begin(), v.end(), solve);
+    //music 안에 장르 정렬이 되어있음
+    //장르 내 노래 정렬
     
-    for(int i = 0; i<v.size(); i++){
-        string key = v[i].first;
+    for(auto a : musicrank){
+        sort(musicrank[a.first].begin(), musicrank[a.first].end(), st);
+    }
+    
+    //map<string, vector<pair<int,int>>> musicrank;
+    for(pair<string,int> a : musiclist){
         int count = 0;
-        sort(m1[key].begin(), m1[key].end(), solve2);
-        for(int j = 0; j<m1[key].size(); j++){
-            if(count >= 2){
-                break;
-            }
-            answer.push_back(m1[key][j].first);
+        for(pair<int,int> v: musicrank[a.first]){
             count++;
+            answer.push_back(v.second);
+            if(count == 2) break;
         }
     }
-    
+
     return answer;
 }
