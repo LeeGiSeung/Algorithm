@@ -1,49 +1,39 @@
 #include <string>
 #include <vector>
-#include <algorithm>
 #include <iostream>
+#include <algorithm>
 using namespace std;
 
-vector<int> v;
-
-bool solve(const vector<int>& a, const vector<int>& b){
+bool st(vector<int> &a, vector<int> &b){
     if(a[0] == b[0]) return a[1] < b[1];
     else return a[0] > b[0];
 }
 
 int solution(vector<vector<int>> scores) {
+    int answer = 0;
     
-    int answer = 1;
+    int wana = scores[0][0];
+    int wanb = scores[0][1];
+    int wansum = wana + wanb;
     
-    int x = scores[0][0];
-    int y = scores[0][1];
+    sort(scores.begin(), scores.end(), st);
     
-    if(scores.size() == 1) return 1;
+    int index = 1;
+    int maxb = 0;
     
-    sort(scores.begin(), scores.end(), solve);
-    
-    int max_y = 0;
-    for(auto& s : scores){
-        if(s[0] > x && s[1] > y) return -1;
-        
-        if(s[1] >= max_y){
-            
-            max_y = s[1];
-            v.push_back(s[0] + s[1]);
-        }
-    }
-    
-    sort(v.begin(), v.end());
-    reverse(v.begin(), v.end());
-    
-    for(int i = 0; i<v.size(); i++){
-        if(v[i] > x + y){
-            answer++;
+    for(int i = 0; i<scores.size(); i++){
+        int a = scores[i][0];
+        int b = scores[i][1];
+        //1 3 5 10 2
+        if(maxb > b){
+            if(a == wana && b == wanb) return -1;
         }
         else{
-            break;
+            maxb = max(maxb, b);
+            if(a + b > wansum) index++;
         }
+        
     }
     
-    return answer;
+    return index;
 }
