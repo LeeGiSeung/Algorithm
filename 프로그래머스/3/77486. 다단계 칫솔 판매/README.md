@@ -1,10 +1,10 @@
 # [level 3] 다단계 칫솔 판매 - 77486 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/77486) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/77486#qna) 
 
 ### 성능 요약
 
-메모리: 24.1 MB, 시간: 169.68 ms
+메모리: 19.9 MB, 시간: 209.31 ms
 
 ### 구분
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2025년 07월 16일 17:20:40
+2025년 10월 29일 16:24:43
 
 ### 문제 설명
 
