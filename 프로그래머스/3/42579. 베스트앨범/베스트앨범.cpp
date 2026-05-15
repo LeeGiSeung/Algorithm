@@ -3,60 +3,66 @@
 #include <algorithm>
 #include <iostream>
 #include <map>
-#include <unordered_map>
 using namespace std;
 
-map<string, int> music; //노래 play 합친거
-map<string, vector<pair<int,int>>> musicrank;
+struct SongInfo{
+    int playCount;
+    int index;
+    
+    SongInfo(int _playCount, int _index){
+        playCount = _playCount;
+        index = _index;
+    }
+                
+};
 
-bool st(pair<int,int> &a, pair<int,int> &b){
-    if(a.first != b.first)
-        return a.first > b.first;
-    else
-        return a.second < b.second;
-}
-
-bool stt(pair<string, int> &a, pair<string, int> &b){
+bool playSolve(pair<string,int> &a, pair<string,int> &b){
     return a.second > b.second;
 }
+
+bool songSolve(SongInfo &a, SongInfo &b){
+    if(a.playCount == b.playCount){
+        return a.index < b.index;
+    }
+    else{
+        return a.playCount > b.playCount;
+    }
+}
+
+map<string,int> playCount; //playcount 계산
+map<string,vector<SongInfo>> songInfo; //각 노래에 대한 정보들
 
 vector<int> solution(vector<string> genres, vector<int> plays) {
     vector<int> answer;
     
-    //장르 정렬
+    //고유번호 : genres index 번호
+    
     for(int i = 0; i<genres.size(); i++){
-        //i : 고유 번호
-        string mus = genres[i];
-        int play = plays[i];
-        music[mus] += play;
-        
-        musicrank[mus].push_back({play,i});
-        
-    }
-    vector<pair<string,int>> musiclist;
-    
-    for(auto a : music){
-        musiclist.push_back({a.first, a.second});
+        playCount[genres[i]] += plays[i];
+        SongInfo SI(plays[i],i);
+        songInfo[genres[i]].push_back(SI);
     }
     
-    sort(musiclist.begin(), musiclist.end(), stt);
+    vector<pair<string,int>> playCountCom(playCount.begin(), playCount.end());
+    vector<pair<string,vector<SongInfo>>> songInfoCom(songInfo.begin(), songInfo.end());
     
-    //music 안에 장르 정렬이 되어있음
-    //장르 내 노래 정렬
+    sort(playCountCom.begin(), playCountCom.end(), playSolve);
     
-    for(auto a : musicrank){
-        sort(musicrank[a.first].begin(), musicrank[a.first].end(), st);
+    for(int i = 0; i<songInfoCom.size(); i++){
+        sort(songInfoCom[i].second.begin(), songInfoCom[i].second.end(), songSolve);
     }
     
-    //map<string, vector<pair<int,int>>> musicrank;
-    for(pair<string,int> a : musiclist){
+    map<string,vector<SongInfo>> sortSongInfo(songInfoCom.begin(), songInfoCom.end());
+    
+    for(int i = 0; i<playCountCom.size(); i++){
+        vector<SongInfo> v = sortSongInfo[playCountCom[i].first];
         int count = 0;
-        for(pair<int,int> v: musicrank[a.first]){
+        for(int j = 0; j<v.size(); j++){
+            if(count >= 2) break;
+            answer.push_back(v[j].index);
             count++;
-            answer.push_back(v.second);
-            if(count == 2) break;
         }
     }
-
+    
     return answer;
 }
