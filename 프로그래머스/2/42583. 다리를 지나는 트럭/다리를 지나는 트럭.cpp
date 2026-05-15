@@ -2,46 +2,53 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
-#include <stack>
 #include <queue>
 using namespace std;
 
+queue<int> q;
+
 int solution(int bridge_length, int weight, vector<int> truck_weights) {
-    int answer = 0; //시간
-    int max_car = truck_weights.size();
-    //다리에 올라갈 수 있는 트럭 수 bridge_length
-    //다리가 견딜 수 있는 무게 weight
-    //트럭 별 무게 truck_weights
+    int answer = 0;
+    int w = 0; //현재 다리 위 무게
+    //bridge_length 트럭이 최대 올라갈 수 있는 갯수
+    //weight 무게이하 까지 견딜 수 있음
     
-    int cur_weight = 0;
-    int cdx = 0;
-    queue<int> q;
-    while(1){
-        
-        if(cdx == max_car){
-            answer += bridge_length;
-            break;
-        }
-        
-        if(q.size() == bridge_length){
-            cur_weight -= q.front();
+    for(int i : truck_weights){
+        q.push(i);
+    }
+    
+    queue<pair<int,int>> bridge;
+    
+    while(!q.empty()){ //아직 트럭을 보낼게 남았을때
+        if(w + q.front() <= weight){ //다리위에 올릴 수 있을때
+            w += q.front();
+            bridge.push({q.front(),0});
             q.pop();
         }
         
-        answer++; //시간 증가
+        int qSize = bridge.size();
         
-        if(cur_weight + truck_weights[cdx] > weight){ //만약 현재 다리에 새로운 차를 넣었을때 넘어가면
-            //차를 못넘음
-            q.push(0);
+        for(int i = 0; i<qSize; i++){
+            pair<int,int> bq = bridge.front();
+            bridge.pop();
+            bq.second += 1;
+            
+            bridge.push(bq);
         }
-        else{
-            //아니면 차 넣을 수 있음
-            q.push(truck_weights[cdx]);
-            cur_weight += truck_weights[cdx]; //다리무게증가
-            cdx++; //차 순서 증가
+        
+        answer++;
+        
+        if(bridge.front().second >= bridge_length){ //다리에서 내릴 수 있으면 내림
+            w -= bridge.front().first;
+            
+            //cout<<"time "<<answer<<" busweight : "<<bridge.front().first<<endl;
+            bridge.pop();
         }
+        
+        
     }
     
+    answer += bridge_length;
     
     return answer;
 }
