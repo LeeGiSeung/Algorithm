@@ -1,43 +1,68 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-#include <set>
 #include <iostream>
+#include <cmath>
 using namespace std;
+
+vector<bool> check(9999999, true);
+vector<bool> visit(9999999, false);
 int answer = 0;
-
-set<int> s;
-
-bool isprime(int cur){
-    if(cur < 2) return false;
-    for(int i = 2; i * i <= cur; i++){
-        if(cur % i == 0) return false;
+//numbers 주어진 숫자
+//CurNumber 지금 조합한 숫자
+//CurCheck 지금 선택한 숫자
+void solve(string numbers, string CurNumber, vector<bool> CurCheck){
+    if(CurNumber != ""){
+       if(check[stoi(CurNumber)] && !visit[stoi(CurNumber)]){
+            visit[stoi(CurNumber)] = true;
+            answer++;
+            cout<<stoi(CurNumber)<<endl;
+        } 
     }
-    return true;
-}
-
-void solve(string cur, string numbers ,vector<bool> &checked){
-    if(!cur.empty()){ //소수판단
-        int num = stoi(cur);
-        if(s.find(num) == s.end()){
-            s.insert(num);
-            if(isprime(num)) answer++;
-            
-        }
-    }
+    //check는 소수 모아둔거임
+    //check에서 선택된건 소수니까 answer++;
     for(int i = 0; i<numbers.size(); i++){
-        if(checked[i]) continue;
-        checked[i] = true;
-        solve(cur + numbers[i], numbers, checked);
-        checked[i] = false;
+        if(CurCheck[i]) continue;
+        CurCheck[i] = true;
+        solve(numbers, CurNumber + numbers[i], CurCheck);
+        CurCheck[i] = false;
     }
 }
 
 int solution(string numbers) {
     
-    vector<bool> checked(numbers.size(), false);
+    answer = 0;
     
-    solve("",numbers,checked);
-     
+    vector<int> number;    
+
+    check[0] = false;
+    check[1] = false;//0,1은 소수아님
+    
+    for(int i = 0; i<numbers.size(); i++){
+        number.push_back(numbers[i] - '0');
+    }
+    
+    sort(number.begin(), number.end());
+    
+    int n = 0;
+    
+    for(int i = numbers.size() - 1; i>= 0; i--){
+        n += number[i] * pow(10, i);
+    }
+
+    for(int i = 2; i * i <= n; i++){
+        if(check[i] == true){
+            for(int j = i * i; j<=n; j+=i){
+                check[j] = false; 
+            }
+        }
+    }
+    
+    //이제 numbers에 있는 문자열을 섞어서 숫자로 만들고 이게 소수인지 판별하면됨
+    
+    vector<bool> CurCheck(numbers.size(), false);
+    string curnumber;
+    solve(numbers, curnumber, CurCheck);
+    
     return answer;
 }
