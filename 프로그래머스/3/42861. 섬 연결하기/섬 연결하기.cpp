@@ -2,44 +2,74 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <set>
 #include <queue>
 using namespace std;
 
-struct Node{
-    int cur;
-    int dist;
+vector<vector<int>> island(100, vector<int>(100, 0));
+
+struct Info{
+    int x;
+    int y;
+    int cost;
     
-    bool operator<(const Node& other) const {
-        return dist > other.dist;   
+    Info(int _x, int _y, int _cost){
+        x = _x;
+        y = _y;
+        cost = _cost;
+    }
+    
+    bool operator<(const Info &other) const{
+        return cost > other.cost;
     }
 };
 
-bool check[101];
+vector<int> parent_num(100, 0);
 
-//다리를 여러 번 건너더라도, 도달할 수만 있으면 통행 가능하다고 봅니다.
+int find_num(int num){
+    if(parent_num[num] == num) return num;
+    return find_num(parent_num[num]);
+}
+
+void union_find(int x, int y){ //x,y 연결
+    int xp = find_num(x);
+    int yp = find_num(y);
+
+    if(xp < yp){
+        parent_num[yp] = xp; 
+    }
+    else{
+        parent_num[xp] = yp;
+    }
+}
+
 int solution(int n, vector<vector<int>> costs) {
     int answer = 0;
+    //priority_queue;
+    //모든 섬이 서로 통행 가능하도록 필요한 최소 비용
     
-    priority_queue<Node> pq;
-    pq.push({0,0});
+    priority_queue<Info> pq;
+    
+    for(int i = 0; i<n; i++){
+        parent_num[i] = i; //일단 자기 자신 부모로 설정
+    }
+    
+    for(int i = 0; i<costs.size(); i++){
+        pq.push(Info(costs[i][0],costs[i][1],costs[i][2]));
+    }
+    
+    //같은 섬에 속해있는지도 봐야하니까 유니온 파인드도 해야함
     
     while(!pq.empty()){
-        Node cur_node = pq.top();
+        //cost가 가장 적은 섬부터 정렬돼있음
+        Info cur = pq.top();
         pq.pop();
         
-        if(check[cur_node.cur]) continue;
-        
-        check[cur_node.cur] = true;
-        answer += cur_node.dist;
-        //cout<<cur_node.cur<<" 확인"<<endl;
-        for(int i = 0; i<costs.size(); i++){
-            if(costs[i][0] == cur_node.cur){
-                pq.push({costs[i][1], costs[i][2]});
-            }
-            else if(costs[i][1] == cur_node.cur){
-                pq.push({costs[i][0], costs[i][2]});
-            }
-        }
+        if(find_num(cur.x) == find_num(cur.y)) continue; //이미 연결된 섬이면 지나감
+        //if(island[cur.x][cur.y] != 0) continue; //이미 지정돼있으면 하면 안됨 이미 최소값임
+        union_find(cur.x, cur.y);
+        answer += cur.cost; //가격 더해주고
+        island[cur.x][cur.y] = cur.cost;
     }
     
     return answer;
