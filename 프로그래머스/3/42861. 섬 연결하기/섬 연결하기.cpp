@@ -66,7 +66,7 @@ int solution(int n, vector<vector<int>> costs) {
         pq.pop();
         
         if(find_num(cur.x) == find_num(cur.y)) continue; //이미 연결된 섬이면 지나감
-        //if(island[cur.x][cur.y] != 0) continue; //이미 지정돼있으면 하면 안됨 이미 최소값임
+        if(island[cur.x][cur.y] != 0) continue; //이미 지정돼있으면 하면 안됨 이미 최소값임
         union_find(cur.x, cur.y);
         answer += cur.cost; //가격 더해주고
         island[cur.x][cur.y] = cur.cost;
