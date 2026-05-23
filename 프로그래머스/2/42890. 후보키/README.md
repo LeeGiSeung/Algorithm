@@ -1,10 +1,10 @@
 # [level 2] 후보키 - 42890 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/42890) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/42890?gad_source=1&gad_campaignid=23037984604&gbraid=0AAAAAC_c4nBvDlkyRGp9RA0V6OOP0OkBP&gclid=Cj0KCQjw_b_QBhCSARIsAP6hR4dtp-0NQnM_J0P8d4SQFZVTyJHoWucMAkDTmTYVkJlHZTtq9HsaS9UaAkNnEALw_wcB) 
 
 ### 성능 요약
 
-메모리: 4.21 MB, 시간: 1.82 ms
+메모리: 4.01 MB, 시간: 0.74 ms
 
 ### 구분
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2025년 09월 18일 17:08:21
+2026년 05월 23일 14:36:00
 
 ### 문제 설명
 

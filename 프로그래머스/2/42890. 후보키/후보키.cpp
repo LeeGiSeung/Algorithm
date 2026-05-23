@@ -1,37 +1,50 @@
 #include <string>
 #include <vector>
-#include <set>
 #include <algorithm>
 #include <iostream>
+#include <set>
 using namespace std;
 
-bool ispri(int bit, vector<int> &ans){
-    for(int check : ans){
-        //0010 1110 
-        if((check & bit) == check) return false;
+vector<int> bitcheck;
+
+bool check(int b){
+    for(int i = 0; i<bitcheck.size(); i++){
+        if((bitcheck[i] & b) == bitcheck[i]) return true;
     }
-    return true;
+    return false;
 }
 
 int solution(vector<vector<string>> relation) {
     int answer = 0;
     
-    int row = relation.size();
-    int cor = relation[0].size();
-    int all = 1<<cor;
-    vector<int> ans;
+    int rowsize = relation.size();
+    int colsize = relation[0].size();
     
-    for(int bit = 1; bit<all; bit++){ //1~16(15)까지의 경우의 수
+    for(int i = 1; i<(1<<colsize); i++){
+        
+        if(check(i)) continue;
+        
         set<string> s;
-        for(int i = 0; i<row; i++){
-            string cur = "";
-            for(int j = 0; j<cor; j++){
-                if(bit & 1<<j) cur += relation[i][j];
+        
+        for(int row = 0; row<rowsize; row++){
+            
+            string str = "";
+            for(int col = 0; col<colsize; col++){
+                
+                if(i & (1<<col)){
+                    str += relation[row][col] + "/";
+                }
+                
             }
-            s.insert(cur);
+            s.insert(str);
         }
-        if(s.size() == row && ispri(bit,ans)) ans.push_back(bit);
+        
+        if(s.size() == rowsize){
+            bitcheck.push_back(i);
+        }
     }
     
-    return ans.size();
+    answer = bitcheck.size();
+    
+    return answer;
 }
