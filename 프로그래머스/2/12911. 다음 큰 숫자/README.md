@@ -1,10 +1,10 @@
 # [level 2] 다음 큰 숫자 - 12911 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/12911) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/12911#qna) 
 
 ### 성능 요약
 
-메모리: 3.81 MB, 시간: 0.03 ms
+메모리: 3.98 MB, 시간: 0.01 ms
 
 ### 구분
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2025년 04월 30일 20:59:02
+2026년 05월 24일 14:10:10
 
 ### 문제 설명
 
