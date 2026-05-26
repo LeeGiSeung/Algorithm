@@ -1,22 +1,21 @@
 #include <string>
 #include <vector>
-#include <iostream>
 #include <algorithm>
-#include <set>
+#include <iostream>
 #include <bit>
+#include <set>
 #include <bitset>
 using namespace std;
 
 set<int> st;
 
-void solve(int count, int sum ,vector<int> &sumvector ,vector<int> &mydice, int t, vector<vector<int>> &dice){
-    if(count == t){
+void solve(vector<vector<int>> &dice, vector<int> &sumvector, vector<int> &dicevector, int count, int sum, int idx){
+    if(idx == count){
         sumvector.push_back(sum);
-        return;
     }
     else{
         for(int i = 0; i<6; i++){
-            solve(count + 1, sum + dice[mydice[count]][i], sumvector, mydice, t, dice);
+            solve(dice, sumvector, dicevector, count + 1, sum + dice[dicevector[count]][i], idx);
         }
     }
 }
@@ -25,13 +24,14 @@ vector<int> solution(vector<vector<int>> dice) {
     vector<int> answer;
     
     int n = dice.size();
-    int fullmask = (1<<n) - 1;
-    int answerwincnt = 0;
     
-    for(int mybit = 1; mybit<(1<<n); mybit++){
-        if(__popcount((unsigned int)mybit) != n/2) continue;
-        if(st.find(mybit) != st.end()) continue; //이미 발견한거면 안됨
-        
+    int fullmask = (1<<n) - 1;
+    int answincnt = 0;
+    
+    for(int mybit = 1; mybit < (1<<n); mybit++){
+        //mybit는 경우의수
+        if(__popcount((unsigned int)mybit) != n / 2) continue;
+        if(st.find(mybit) != st.end()) continue;
         int enemybit = mybit ^ fullmask;
         
         vector<int> mydice;
@@ -48,38 +48,37 @@ vector<int> solution(vector<vector<int>> dice) {
         
         vector<int> mysum;
         vector<int> enemysum;
-        
-        solve(0,0,mysum,mydice, n / 2, dice);
-        solve(0,0,enemysum,enemydice, n / 2, dice);
-        
-        sort(enemysum.begin(), enemysum.end());
+
+        solve(dice, mysum,mydice,0,0,n/2);
+        solve(dice, enemysum,enemydice,0,0,n/2);
         sort(mysum.begin(), mysum.end());
+        sort(enemysum.begin(), enemysum.end());
+        //mysum에서 enemysum을 이길 수 있는 count 계산
         int wincnt = 0;
-        for(int i = 0; i<mysum.size(); i++){
-            wincnt  += lower_bound(enemysum.begin(), enemysum.end(), mysum[i]) - enemysum.begin();
+        for(int i : mysum){
+            wincnt += lower_bound(enemysum.begin(), enemysum.end(), i) - enemysum.begin();    
         }
         
-        if(wincnt > answerwincnt){
-            answerwincnt = wincnt;
+        if(wincnt > answincnt){
+            answincnt = wincnt;
             answer.clear();
-
-            for(int j = 0; j<mydice.size(); j++){
-                answer.push_back(mydice[j] + 1);
+            
+            for(int i : mydice){
+                answer.push_back(i + 1);
             }
         }
         
         wincnt = 0;
-        
-        for(int i = 0; i<enemysum.size(); i++){
-            wincnt += lower_bound(mysum.begin(), mysum.end(), enemysum[i]) - mysum.begin();
+        for(int i : enemysum){
+            wincnt += lower_bound(mysum.begin(), mysum.end(), i) - mysum.begin();    
         }
         
-        if(wincnt > answerwincnt){
-            answerwincnt = wincnt;
+        if(wincnt > answincnt){
+            answincnt = wincnt;
             answer.clear();
-
-            for(int j = 0; j<enemydice.size(); j++){
-                answer.push_back(enemydice[j] + 1);
+            
+            for(int i : enemydice){
+                answer.push_back(i + 1);
             }
         }
         
