@@ -1,46 +1,46 @@
-#include <string>
 #include <vector>
-#include <iostream>
 #include <algorithm>
+
 using namespace std;
 
 int solution(int n, vector<int> weak, vector<int> dist) {
-    int answer = 1e8;
-    int wallsize = weak.size();
+    int answer = 1e9;
     
-    for(int i = 0; i<wallsize; i++){
-        weak.push_back(weak[i] + n); //11시에서 1시로 가는 한바뀌 도는 것도 생각해야함
+    // 1. 원형 배열을 직선 배열로 확장 (weak 개수 2배로)
+    int weak_size = weak.size();
+    for (int i = 0; i < weak_size; i++) {
+        weak.push_back(weak[i] + n);
     }
     
-    do{
-        for(int i = 0; i<wallsize; i++){
-            int startwall = weak[i];
-            int endwall = weak[i + wallsize - 1];
+    sort(dist.begin(), dist.end());
+    
+    do {
+        for (int i = 0; i < weak_size; i++) {
+            int startIdx = i;
+            int endIdx = i + weak_size - 1;
             
+            int friendcount = 0;
+            int nextStartIdx = startIdx;
             for(int j = 0; j<dist.size(); j++){
-                startwall += dist[j];
+                friendcount++;
+                int nextPoint = dist[j] + weak[nextStartIdx]; //다음 위치
                 
-                if(startwall >= endwall){ //dist 추가했는데 만약 endwall 넘으면 
-                    answer = min(answer, j+1);
+                if(nextPoint >= weak[endIdx]){
+                    answer = min(friendcount, answer);
                     break;
                 }
                 
-                //dist 더해진 startwall 기준으로 다음벽 검사
-                for(int z = 0; z<weak.size(); z++){
-                    if(startwall < weak[z]){
-                        startwall = weak[z];
-                        break;
-                    }
+                while(nextStartIdx <= endIdx && nextPoint >= weak[nextStartIdx]){
+                    nextStartIdx++;
+                }
+                
+                if(nextStartIdx > endIdx){
+                    answer = min(friendcount, answer);
+                    break;
                 }
             }
         }
-    }while(next_permutation(dist.begin(), dist.end()));
+    } while (next_permutation(dist.begin(), dist.end()));
     
-    //1, 5, 6, 10, 13, 17, 18
-    
-    //1, 3, 4, 9, 10, 13, 15, 16, 21
-    
-    if(answer == 1e8) answer = -1;
-    
-    return answer;
+    return (answer == 1e9) ? -1 : answer;
 }
