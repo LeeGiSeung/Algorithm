@@ -2,56 +2,43 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
-#include <string.h>
 #include <map>
+#include <set>
 using namespace std;
 
-bool st(pair<int,int> &a, pair<int,int> &b){
-    if(a.second - a.first != b.second - b.first){
-        return a.second - a.first < b.second - b.first;
-    }
-    else{
-        //같으면 시작점 작은 순서로
-        return a.first < b.first;
-    }
-}
-
 vector<int> solution(vector<string> gems) {
-    vector<int> answer(2);
-    map<string,int> mlist;
-    //모든 보석을 포함하는 가장 짧은 구간
-    //가장 짧은 구간의 시작 진열대 번호와 끝 진열대 번호
-    int left = 0;
-    int right = 0;
+    vector<int> answer(2,0);
+    int minrange = 1e9;
+    //모든 보석을 하나 이상 포함하는 가장 짧은 구간을 찾아서 return
+    set<string> s;
+    for(string i : gems) s.insert(i);
     
-    for(string s : gems) mlist[s]++;
-         
-    int msize = mlist.size(); //보석 종류 수
+    int gem = s.size();
     
+    int n = gems.size();
     map<string,int> m;
-    vector<pair<int,int>> answerlist;
     
     
-    while (true) {
-        if (m.size() == msize) {
-            // 정답 후보
-            answerlist.push_back({left + 1, right}); // +1은 문제 인덱스 보정용
-            m[gems[left]]--;
-            if (m[gems[left]] == 0)
-                m.erase(gems[left]);
-            left++;
-        } 
-        else {
-            if (right == gems.size()) break;
-            m[gems[right]]++;
-            right++;
+    int start = 0;
+    for(int end = 0; end < n; end++){
+        m[gems[end]]++;
+        
+        while(m.size() == gem){
+            if(end - start < minrange){
+                minrange = end - start;
+                answer[0] = start + 1;
+                answer[1] = end + 1;
+            }
+            
+            m[gems[start]]--;
+
+            if(m[gems[start]] == 0){
+                m.erase(gems[start]);
+            }
+
+            start++;
         }
     }
-    
-    sort(answerlist.begin(), answerlist.end(), st);
-    
-    answer[0] = answerlist[0].first;
-    answer[1] = answerlist[0].second;
     
     return answer;
 }
