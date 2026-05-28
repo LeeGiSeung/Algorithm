@@ -1,42 +1,44 @@
 #include <string>
 #include <vector>
-#include <set>
+#include <algorithm>
+#include <iostream>
 #include <map>
-
 using namespace std;
 
 int solution(vector<string> want, vector<int> number, vector<string> discount) {
     int answer = 0;
+    int minrange = 1e9;
 
-    map<string, int> m;
-
-    for (int i = 0; i < number.size(); i++) {
-        m[want[i]] = number[i];
+    //10일 연속으로 일치할 경우에 맞춰서
+    unordered_map<string,int> junghyun;
+    unordered_map<string,int> market;
+    for(int i = 0; i<want.size(); i++){
+        junghyun[want[i]] = number[i];
     }
-
-    for (int i = 0; i < discount.size() - 9; i++) { //10일간 할인을 보면 됨
-        map<string, int> q_m;
-        for (int j = 0; j < 10; j++) {
-            q_m[discount[i + j]] += 1;
+    
+    for(int i = 0; i<10; i++){
+        market[discount[i]]++;
+    }
+    
+    if(junghyun == market){ //같은 날이면
+        answer++;
+    }
+    
+    for(int day = 10; day<discount.size(); day++){
+        
+        market[discount[day]]++;
+        market[discount[day-10]]--;
+        
+        if(market[discount[day-10]] == 0){
+            market.erase(discount[day-10]);
         }
-
-        bool match = true;
-
-        for (auto cur : m) {
-            if (q_m[cur.first] != cur.second) { //현재 할인 품목 != 내가 원하는 할인
-                match = false;
-                break;
-            }
-        }
-        if (match == true) {
+        
+        if(junghyun == market){ //같은 날이면
             answer++;
-        }
+        }   
     }
+    
 
+    
     return answer;
-}
-
-int main() {
-    vector<string> want = { "banana", "apple", "rice", "pork", "pot" }; vector<int> number = { 3, 2, 2, 2, 1 }; vector<string> discount = { "chicken", "apple", "apple", "banana", "rice", "apple", "pork", "banana", "pork", "rice", "pot", "banana", "apple", "banana" };
-    solution(want, number, discount);
 }

@@ -1,10 +1,10 @@
 # [level 2] 할인 행사 - 131127 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/131127) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/131127?gad_source=1&gad_campaignid=23037984604&gbraid=0AAAAAC_c4nAkryEV1zMIXB-dbqWm15kca&gclid=CjwKCAjwrNrQBhBjEiwAoR4VO0WY5UMlyA8SOt5u3DqnW8FhoPL75Bx-p2YbYHyzGEgIdYZwJOEtXRoCRHgQAvD_BwE) 
 
 ### 성능 요약
 
-메모리: 8.88 MB, 시간: 81.69 ms
+메모리: 8.82 MB, 시간: 7.95 ms
 
 ### 구분
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2025년 05월 02일 13:59:38
+2026년 05월 28일 15:53:01
 
 ### 문제 설명
 
