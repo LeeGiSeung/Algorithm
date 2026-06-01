@@ -1,73 +1,69 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <iostream>
 #include <queue>
-
 using namespace std;
 
-struct Data {
-    int Check;  
-    int Sheep;  
-    int Wolf;   
+vector<int> info;
+vector<vector<int>> node(18, vector<int>());
+int maxsheep = 1;
+
+int visited[1<<18];
+
+struct Data{
+    int visit;
+    int sheep;
+    int wolf;
 };
 
-vector<int> node[18];
-bool visited[1 << 17]; 
-
-int solution(vector<int> info, vector<vector<int>> edges) {
-    int n = info.size();
-
-    for(const auto& edge : edges) {
-        node[edge[0]].push_back(edge[1]);
-    }
-    
-    for(int i = 0; i < (1 << n); i++) visited[i] = false;
-    
+void solve(){
     queue<Data> q;
     
-    int startCheck = 1; 
-    q.push({startCheck, 1, 0});
-    visited[startCheck] = true;
+    q.push({1,1,0});
     
-    int maxSheep = 1;
-    
-    while(!q.empty()) {
+    while(!q.empty()){
         Data d = q.front();
         q.pop();
         
-        int Check = d.Check;
-        int Sheep = d.Sheep;
-        int Wolf = d.Wolf;
+        int visit = d.visit;
+        int sheep = d.sheep;
+        int wolf = d.wolf;
         
-        maxSheep = max(maxSheep, Sheep);
+        maxsheep = max(sheep, maxsheep);
         
-        for(int parent = 0; parent < n; parent++){
-            if(Check & (1<<parent)){ //지금 Check에서 접근이 되는 애면 접근함
-                for(int i = 0; i<node[parent].size(); i++){
-                    int nextNode = node[parent][i];
+        for(int i = 0; i<info.size(); i++){
+            if(visit & (1<<i)){ //뻗을 수 있는 노드이면
+                for(int j = 0; j<node[i].size(); j++){
+                    int next = node[i][j];
+                    if(visit & (1<<next)) continue;
                     
-                    //nextNode 간다고했을때 이게 이미 간건지 확인
-                    int nextCheck = Check | (1<<nextNode);
+                    int next_sheep = sheep + (info[next] == 0);
+                    int next_wolf = wolf + (info[next] == 1);
+                    int next_visit = visit | (1<<next);
                     
-                    if(visited[nextCheck]) continue; //이미 방문한거임
-                    
-                    int nextAnimal = info[nextNode];
-                    
-                    if(nextAnimal == 0){
-                        visited[nextCheck] = true;
-                        q.push({nextCheck, Sheep + 1, Wolf});
+                    if(next_sheep > next_wolf && !visited[next_visit]){
+                        visited[next_visit] = true;
+                        q.push({next_visit,next_sheep,next_wolf});
                     }
-                    else{
-                        if(Wolf + 1 < Sheep){
-                            visited[nextCheck] = true;
-                            q.push({nextCheck, Sheep, Wolf + 1});
-                        }
-                    }
-                    
                 }
             }
         }
+        
     }
     
-    return maxSheep;
+}
+
+int solution(vector<int> _info, vector<vector<int>> _edges) {
+    maxsheep = 1;
+    
+    for(vector<int> v : _edges){
+        node[v[0]].push_back(v[1]);
+    }
+    info = _info;
+    solve();
+    
+    //같은 양을 들고 같은 노드에 방문을 2번하면 그건 이후에도 바뀔일이 없다는거임
+    
+    return maxsheep;
 }
